@@ -1,556 +1,2627 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#F6EFE2">
-<title>여름휴가 계획 — Trip Log</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
-<style>
-  :root{
-    --sand:#F6EFE2;
-    --sand-2:#EFE5D2;
-    --teal:#0F5C66;
-    --teal-dark:#0B434B;
-    --ink:#1C2B2D;
-    --coral:#FF6F4D;
-    --sun:#FFB84C;
-    --mist:#D7E8E4;
-    --white:#FFFDF8;
-  }
-  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{margin:0;padding:0;}
-  html{ -webkit-text-size-adjust:100%; }
-  body{
-    background:var(--sand);
-    background-image:
-      radial-gradient(circle at 1px 1px, rgba(15,92,102,0.06) 1px, transparent 0);
-    background-size:22px 22px;
-    color:var(--ink);
-    font-family:'Pretendard', -apple-system, sans-serif;
-    min-height:100vh;
-    padding-top:env(safe-area-inset-top);
-    padding-bottom:calc(72px + env(safe-area-inset-bottom));
-    padding-left:env(safe-area-inset-left);
-    padding-right:env(safe-area-inset-right);
-    overscroll-behavior-y:none;
-  }
-  input, textarea{ font-size:16px; } /* iOS 자동 확대(zoom) 방지 */
-  h1,h2,h3,.serif{ font-family:'Fraunces', serif; }
-  ::-webkit-scrollbar{ height:6px; width:6px; }
-  ::-webkit-scrollbar-thumb{ background:var(--mist); border-radius:4px; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1" />
+  <title>경주 여행 · 민주 희주 나원</title>
+  <meta name="theme-color" content="#38BDF8" />
+  <meta name="description" content="2026년 8월 경주 여행 계획 공유" />
 
-  /* ---------- Nickname modal ---------- */
-  #nickModal{
-    position:fixed; inset:0; background:rgba(28,43,45,0.55);
-    display:flex; align-items:center; justify-content:center; z-index:100;
-    padding:20px;
-  }
-  #nickModal.hidden{ display:none; }
-  .nickCard{
-    background:var(--white); border-radius:18px; padding:32px 28px;
-    width:100%; max-width:360px; text-align:center;
-    box-shadow:0 20px 40px rgba(28,43,45,0.25);
-    border:1px solid var(--mist);
-  }
-  .nickCard .stamp{
-    width:64px; height:64px; border-radius:50%; border:2px dashed var(--coral);
-    display:flex; align-items:center; justify-content:center; margin:0 auto 16px;
-    color:var(--coral); font-family:'Fraunces',serif; font-weight:700; font-size:22px;
-    transform:rotate(-8deg);
-  }
-  .nickCard h2{ margin:0 0 6px; font-size:22px; }
-  .nickCard p{ margin:0 0 18px; color:#5c6b6a; font-size:14px; line-height:1.6; }
-  .nickCard input{
-    width:100%; padding:12px 14px; min-height:44px; border-radius:10px; border:1.5px solid var(--mist);
-    font-size:16px; font-family:'Pretendard',sans-serif; margin-bottom:12px; background:var(--sand);
-  }
-  .nickCard input:focus{ outline:none; border-color:var(--teal); }
-  .btn{
-    display:inline-flex; align-items:center; justify-content:center; gap:6px;
-    padding:11px 18px; min-height:44px; border-radius:10px; border:none; cursor:pointer;
-    font-family:'Pretendard',sans-serif; font-weight:600; font-size:15px;
-    transition:transform .12s ease;
-  }
-  .btn:active{ transform:scale(0.97); }
-  .btn-primary{ background:var(--teal); color:#fff; width:100%; }
-  .btn-primary:hover{ background:var(--teal-dark); }
-  .btn-coral{ background:var(--coral); color:#fff; }
-  .btn-ghost{ background:transparent; border:1.5px solid var(--mist); color:var(--ink); }
+  <!-- 홈 화면 추가 시 전체화면 앱처럼 동작 -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="경주 여행" />
 
-  /* ---------- Header ---------- */
-  header.cover{
-    max-width:760px; margin:0 auto; padding:40px 20px 20px;
-    text-align:center;
-  }
-  header.cover .eyebrow{
-    font-size:12px; letter-spacing:.14em; color:var(--teal); font-weight:600;
-    text-transform:uppercase; margin-bottom:6px;
-  }
-  header.cover h1{ font-size:34px; margin:0 0 8px; color:var(--teal-dark); }
-  header.cover .sub{ color:#5c6b6a; font-size:14px; margin-bottom:18px; }
-  .who{
-    display:flex; justify-content:center; align-items:center; gap:8px;
-    font-size:13px; color:var(--ink);
-  }
-  .who .badge{
-    font-family:'Caveat',cursive; font-size:20px; color:var(--coral); font-weight:700;
-  }
-  .members{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-top:10px; }
-  .member-chip{
-    background:var(--mist); color:var(--teal-dark); font-size:12px; padding:4px 10px;
-    border-radius:20px; font-weight:600;
-  }
+  <!-- Pretendard font -->
+  <link rel="stylesheet" as="style" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
 
-  /* ---------- Bottom nav (iOS thumb-friendly) ---------- */
-  .bottom-nav{
-    position:fixed; left:0; right:0; bottom:0; z-index:50;
-    display:flex; background:rgba(255,253,248,0.92);
-    -webkit-backdrop-filter:saturate(180%) blur(14px);
-    backdrop-filter:saturate(180%) blur(14px);
-    border-top:1px solid var(--mist);
-    padding:6px 6px calc(6px + env(safe-area-inset-bottom));
-  }
-  .nav-item{
-    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:3px; padding:6px 4px; border-radius:12px; cursor:pointer; color:#9aa5a3;
-    min-height:48px; user-select:none;
-  }
-  .nav-item i{ font-size:22px; line-height:1; }
-  .nav-item span{ font-size:11px; font-weight:600; }
-  .nav-item.active{ color:var(--teal-dark); background:var(--mist); }
-  .nav-item:active{ transform:scale(0.95); }
+  <style>
+/* ================================
+   경주 여행 - 여름 바캉스 스타일
+   ================================ */
 
-  main{ max-width:760px; margin:16px auto 0; padding:18px; background:var(--white);
-    border-radius:16px; border:1px solid var(--mist); min-height:400px; }
-  .panel{ display:none; }
-  .panel.active{ display:block; }
+:root {
+  /* Brand */
+  --sky: #38BDF8;
+  --sky-deep: #0284C7;
+  --sky-soft: #E0F2FE;
+  --coral: #FF7A6B;
+  --coral-deep: #E85A4B;
+  --coral-soft: #FFE4E0;
+  --sun: #FFD84D;
+  --sun-soft: #FFF4C7;
+  --sand: #FFF7ED;
+  --mint: #6EE7B7;
+  --lavender: #C4B5FD;
 
-  /* ---------- Itinerary ---------- */
-  .day-block{ margin-bottom:28px; }
-  .day-head{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
-  .day-stamp{
-    width:52px; height:52px; border-radius:50%; border:2px dashed var(--teal);
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    color:var(--teal-dark); flex-shrink:0; transform:rotate(-5deg);
-  }
-  .day-stamp small{ font-size:8px; letter-spacing:.05em; }
-  .day-stamp b{ font-family:'Fraunces',serif; font-size:16px; line-height:1; }
-  .day-title-input{
-    font-family:'Fraunces',serif; font-size:18px; border:none; background:transparent;
-    color:var(--teal-dark); flex:1; padding:4px 0; border-bottom:1px dashed transparent;
-  }
-  .day-title-input:focus{ outline:none; border-bottom-color:var(--mist); }
-  .day-del{ background:none; border:none; color:#b9b2a5; cursor:pointer; font-size:16px; }
+  /* Neutrals */
+  --canvas: #FFFFFF;
+  --surface-soft: #F8FAFC;
+  --hairline: #E2E8F0;
+  --hairline-soft: #F1F5F9;
+  --ink-deep: #0F172A;
+  --ink: #1E293B;
+  --charcoal: #334155;
+  --slate: #475569;
+  --steel: #64748B;
+  --stone: #94A3B8;
 
-  .item-row{
-    display:flex; gap:10px; align-items:flex-start; padding:10px 12px;
-    border-radius:10px; background:var(--sand); margin-bottom:8px;
-  }
-  .item-time{ font-family:'Fraunces',serif; font-size:13px; color:var(--coral); font-weight:600;
-    min-width:48px; padding-top:2px; }
-  .item-body{ flex:1; }
-  .item-title{ font-size:14.5px; font-weight:600; margin:0; }
-  .item-memo{ font-size:13px; color:#5c6b6a; margin:2px 0 0; }
-  .item-meta{ font-size:11px; color:#9aa5a3; margin-top:4px; }
-  .item-actions{ display:flex; gap:4px; }
-  .icon-btn{ background:none; border:none; color:#9aa5a3; cursor:pointer; font-size:15px;
-    min-width:32px; min-height:32px; display:flex; align-items:center; justify-content:center; }
-  .icon-btn:hover{ color:var(--coral); }
-  .day-del{ min-width:32px; min-height:32px; display:flex; align-items:center; justify-content:center; }
+  /* Semantic */
+  --success: #10B981;
+  --warning: #F59E0B;
+  --critical: #EF4444;
 
-  .add-item-row{ display:flex; gap:8px; margin-top:6px; flex-wrap:wrap; }
-  .add-item-row input{
-    padding:10px; min-height:40px; border-radius:8px; border:1px solid var(--mist); font-size:16px;
-    font-family:'Pretendard',sans-serif; background:var(--white);
-  }
-  .add-item-row input[name=time]{ width:80px; }
-  .add-item-row input[name=title]{ flex:1; min-width:120px; }
-  .add-item-row input[name=memo]{ width:100%; margin-top:6px; }
+  /* Radius */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+  --r-xxl: 28px;
+  --r-full: 999px;
 
-  .add-day-btn{
-    width:100%; padding:12px; border-radius:10px; border:1.5px dashed var(--mist);
-    background:none; color:var(--teal); font-weight:600; cursor:pointer; font-size:14px;
-  }
+  /* Shadow */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
 
-  /* ---------- Wishlist (postcards) ---------- */
-  .wish-grid{
-    display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:16px;
-    margin-bottom:18px;
-  }
-  .postcard{
-    background:var(--sand); border:1px solid var(--mist); border-radius:4px;
-    padding:16px 14px 12px; position:relative; min-height:120px;
-  }
-  .postcard::before{
-    content:''; position:absolute; top:-8px; left:16px; width:34px; height:14px;
-    background:rgba(255,184,76,.55); transform:rotate(-4deg);
-  }
-  .postcard .content{ font-size:14px; line-height:1.5; margin:6px 0 14px; }
-  .postcard .foot{ display:flex; justify-content:space-between; align-items:center; }
-  .postcard .author{ font-family:'Caveat',cursive; font-size:18px; color:var(--teal-dark); font-weight:700; }
-  .postcard .date{ font-size:10px; color:#9aa5a3; }
-  .postcard .del{ position:absolute; top:6px; right:8px; }
+  /* Layout */
+  --app-max: 480px;
+  --tabbar-h: 72px;
+  --header-h: 64px;
+}
 
-  .add-wish{
-    display:flex; gap:8px; flex-wrap:wrap;
-  }
-  .add-wish textarea{
-    flex:1; min-width:160px; padding:10px; border-radius:8px; border:1px solid var(--mist);
-    font-family:'Pretendard',sans-serif; font-size:16px; resize:vertical; min-height:44px;
-  }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
 
-  /* ---------- Activity log ---------- */
-  .log-item{
-    display:flex; gap:10px; padding:9px 0; border-bottom:1px solid var(--sand-2); font-size:13px;
-  }
-  .log-item .dot{ width:6px; height:6px; border-radius:50%; background:var(--coral); margin-top:6px; flex-shrink:0; }
-  .log-item b{ color:var(--teal-dark); }
-  .log-item .t{ font-size:11px; color:#9aa5a3; display:block; margin-top:2px; }
-  .empty{ text-align:center; color:#9aa5a3; font-size:13px; padding:30px 0; }
+html, body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  color: var(--ink-deep);
+  background: linear-gradient(180deg, #E0F2FE 0%, #FEF3C7 50%, #FFF7ED 100%);
+  background-attachment: fixed;
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
 
-  .setup-warn{
-    max-width:760px; margin:16px auto 0; padding:12px 16px; background:#FFF4E8;
-    border:1px solid var(--sun); border-radius:10px; font-size:12.5px; color:#7a5a1f; line-height:1.6;
-  }
-  .setup-warn code{ background:#fff; padding:1px 5px; border-radius:4px; }
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
 
-  @media (max-width:480px){
-    header.cover{ padding:24px 16px 12px; }
-    header.cover h1{ font-size:24px; }
-    header.cover .sub{ font-size:13px; margin-bottom:12px; }
-    main{ padding:14px; margin:12px 10px 0; border-radius:16px; }
-    .wish-grid{ grid-template-columns:repeat(2, 1fr); gap:10px; }
-    .postcard{ padding:14px 12px 10px; min-height:100px; }
-    .day-stamp{ width:44px; height:44px; }
-    .day-stamp b{ font-size:14px; }
-    .day-title-input{ font-size:16px; }
-    .add-item-row input[name=time]{ width:64px; }
-    .item-row{ padding:9px 10px; }
-    .bottom-nav{ padding-left:2px; padding-right:2px; }
-  }
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
 
-  @media (max-width:380px){
-    header.cover h1{ font-size:21px; }
-    .wish-grid{ grid-template-columns:1fr; }
-  }
-</style>
+a {
+  color: var(--sky-deep);
+  text-decoration: none;
+}
+
+/* ================================
+   App Shell
+   ================================ */
+.app {
+  max-width: var(--app-max);
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--canvas);
+  position: relative;
+  padding-bottom: calc(var(--tabbar-h) + 20px);
+  box-shadow: 0 0 40px rgba(15, 23, 42, 0.06);
+}
+
+/* ================================
+   Header
+   ================================ */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: calc(var(--header-h) + env(safe-area-inset-top));
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--hairline-soft);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: env(safe-area-inset-top) 16px 0;
+}
+
+.header-back {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+}
+.header-back:active { background: var(--surface-soft); }
+
+.header-title {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.header-me {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--r-full);
+  background: var(--sky-soft);
+  color: var(--sky-deep);
+  font-size: 12px;
+  font-weight: 700;
+  border: 1.5px solid transparent;
+}
+.header-me .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ================================
+   Screens
+   ================================ */
+.screen {
+  display: none;
+  padding: 16px;
+  animation: fadeIn 0.25s ease-out;
+}
+.screen.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ================================
+   HOME - Hero Card
+   ================================ */
+.hero-card {
+  position: relative;
+  border-radius: var(--r-xxl);
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #38BDF8 0%, #7DD3FC 50%, #FFD84D 100%);
+  color: white;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-md);
+}
+.hero-card::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+}
+.hero-card::after {
+  content: '';
+  position: absolute;
+  bottom: -30px;
+  left: -30px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(255, 122, 107, 0.35);
+}
+
+.hero-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: 0.95;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-title {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-top: 4px;
+  position: relative;
+  z-index: 1;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.hero-sub {
+  margin-top: 8px;
+  font-size: 14px;
+  opacity: 0.95;
+  position: relative;
+  z-index: 1;
+}
+
+.dday-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  z-index: 1;
+}
+.dday-num {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1;
+}
+.dday-label {
+  font-size: 20px;
+  font-weight: 800;
+  opacity: 0.95;
+}
+
+/* Weather chip */
+.weather-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+}
+.weather-chip .w-icon { font-size: 16px; }
+
+/* ================================
+   Members row
+   ================================ */
+.members-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+.member-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 8px 6px;
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-full);
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.member-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ================================
+   Section Grid (Home menu)
+   ================================ */
+.section-title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  margin: 20px 0 12px;
+  color: var(--ink-deep);
+}
+.section-title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 20px 0 12px;
+}
+.section-title-row .section-title { margin: 0; }
+.section-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--steel);
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.menu-card {
+  position: relative;
+  background: white;
+  border-radius: var(--r-xl);
+  padding: 18px 16px 16px;
+  text-align: left;
+  border: 1px solid var(--hairline-soft);
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  overflow: hidden;
+}
+.menu-card:active {
+  transform: scale(0.97);
+  box-shadow: var(--shadow-sm);
+}
+.menu-card .icon-blob {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+.menu-card .title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-deep);
+  letter-spacing: -0.2px;
+}
+.menu-card .meta {
+  font-size: 11px;
+  color: var(--steel);
+  margin-top: 3px;
+  font-weight: 500;
+}
+
+/* icon variants */
+.icon-blob.b-sky { background: var(--sky-soft); color: var(--sky-deep); }
+.icon-blob.b-coral { background: var(--coral-soft); color: var(--coral-deep); }
+.icon-blob.b-sun { background: var(--sun-soft); color: #B45309; }
+.icon-blob.b-mint { background: #D1FAE5; color: #047857; }
+.icon-blob.b-lavender { background: #EDE9FE; color: #6D28D9; }
+.icon-blob.b-sand { background: var(--sand); color: #92400E; }
+.icon-blob.b-rose { background: #FFE4E6; color: #BE123C; }
+.icon-blob.b-slate { background: var(--surface-soft); color: var(--charcoal); }
+
+/* ================================
+   Tab Bar
+   ================================ */
+.tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--app-max);
+  height: var(--tabbar-h);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--hairline-soft);
+  display: flex;
+  align-items: stretch;
+  z-index: 40;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.tab-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--stone);
+  font-size: 11px;
+  font-weight: 600;
+  transition: color 0.15s;
+}
+.tab-btn svg { width: 22px; height: 22px; }
+.tab-btn.active {
+  color: var(--sky-deep);
+}
+
+/* ================================
+   List Items (일정, 위시, 음식 etc)
+   ================================ */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.list-item {
+  background: white;
+  border: 1px solid var(--hairline-soft);
+  border-radius: var(--r-lg);
+  padding: 14px 14px 12px;
+  position: relative;
+  transition: border-color 0.15s;
+}
+.list-item .item-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.list-item .item-body {
+  flex: 1;
+  min-width: 0;
+}
+.list-item .item-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink-deep);
+  letter-spacing: -0.2px;
+  word-break: break-word;
+}
+.list-item .item-desc {
+  font-size: 13px;
+  color: var(--charcoal);
+  margin-top: 4px;
+  word-break: break-word;
+  white-space: pre-wrap;
+  line-height: 1.55;
+}
+.list-item .item-foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--steel);
+  flex-wrap: wrap;
+}
+.item-foot .by {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 3px;
+  background: var(--surface-soft);
+  border-radius: var(--r-full);
+  font-weight: 600;
+  color: var(--charcoal);
+}
+.item-foot .by .mini-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.item-foot .dot-sep { color: var(--stone); }
+
+.item-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--steel);
+}
+.icon-btn:active { background: var(--surface-soft); }
+.icon-btn.danger { color: var(--critical); }
+.icon-btn svg { width: 16px; height: 16px; }
+
+/* Checkbox row (준비물) */
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.check-box {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: white;
+  color: white;
+  transition: all 0.15s;
+}
+.check-box.checked {
+  background: var(--sky);
+  border-color: var(--sky);
+}
+.check-box.checked::after {
+  content: '';
+  width: 10px;
+  height: 6px;
+  border-left: 2px solid white;
+  border-bottom: 2px solid white;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+.check-item.checked .item-title {
+  text-decoration: line-through;
+  color: var(--stone);
+}
+
+/* Day header (일정표) */
+.day-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 8px 0 10px;
+  padding-top: 4px;
+}
+.day-badge {
+  padding: 4px 12px;
+  background: var(--sky);
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+  border-radius: var(--r-full);
+  letter-spacing: 0.5px;
+}
+.day-date {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.day-weekday {
+  font-size: 13px;
+  color: var(--steel);
+  font-weight: 500;
+}
+
+.schedule-time {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--sun-soft);
+  color: #B45309;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: var(--r-full);
+  letter-spacing: 0.3px;
+  margin-bottom: 6px;
+}
+
+/* Add button (FAB style at bottom of list) */
+.add-btn {
+  width: 100%;
+  padding: 14px;
+  background: white;
+  border: 2px dashed var(--hairline);
+  border-radius: var(--r-lg);
+  color: var(--steel);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s;
+}
+.add-btn:active {
+  border-color: var(--sky);
+  color: var(--sky-deep);
+  background: var(--sky-soft);
+}
+
+/* ================================
+   Buttons
+   ================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 22px;
+  border-radius: var(--r-full);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.1px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--sky);
+  color: white;
+}
+.btn-primary:active { background: var(--sky-deep); }
+.btn-coral {
+  background: var(--coral);
+  color: white;
+}
+.btn-coral:active { background: var(--coral-deep); }
+.btn-ink {
+  background: var(--ink-deep);
+  color: white;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--hairline);
+}
+.btn-block { width: 100%; }
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ================================
+   Modals
+   ================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal-overlay.active {
+  display: flex;
+  animation: fadeIn 0.2s ease-out;
+}
+.modal {
+  width: 100%;
+  max-width: var(--app-max);
+  background: white;
+  border-radius: 24px 24px 0 0;
+  padding: 20px 20px calc(24px + env(safe-area-inset-bottom));
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.modal-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--hairline);
+  border-radius: 4px;
+  margin: 0 auto 16px;
+}
+.modal-title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  margin-bottom: 16px;
+}
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+}
+.modal-actions .btn { flex: 1; }
+
+/* Form fields */
+.field {
+  margin-bottom: 14px;
+}
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--charcoal);
+  margin-bottom: 6px;
+  letter-spacing: 0.2px;
+}
+.field input, .field textarea, .field select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--hairline);
+  border-radius: var(--r-md);
+  background: white;
+  font-size: 15px;
+  transition: border-color 0.15s;
+  color: var(--ink-deep);
+}
+.field input:focus, .field textarea:focus, .field select:focus {
+  outline: none;
+  border-color: var(--sky);
+}
+.field textarea {
+  resize: vertical;
+  min-height: 90px;
+  font-family: inherit;
+}
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* Nickname picker */
+.nickname-suggests {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.nick-chip {
+  padding: 10px 18px;
+  border-radius: var(--r-full);
+  background: white;
+  border: 1.5px solid var(--hairline);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  transition: all 0.15s;
+}
+.nick-chip:active, .nick-chip.selected {
+  background: var(--sky);
+  border-color: var(--sky);
+  color: white;
+}
+
+/* ================================
+   Nickname Onboarding Screen
+   ================================ */
+.onboard-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.onboard-card {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  border-radius: var(--r-xxl);
+  padding: 32px 24px;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+.onboard-illust {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, var(--sky) 0%, var(--sun) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  box-shadow: 0 8px 20px rgba(56, 189, 248, 0.35);
+}
+.onboard-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  margin-bottom: 6px;
+}
+.onboard-sub {
+  font-size: 14px;
+  color: var(--steel);
+  margin-bottom: 24px;
+  line-height: 1.55;
+}
+
+/* ================================
+   Empty state
+   ================================ */
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--stone);
+}
+.empty-icon {
+  font-size: 42px;
+  margin-bottom: 10px;
+  opacity: 0.6;
+}
+.empty-text {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: var(--steel);
+}
+.empty-hint {
+  font-size: 12px;
+  color: var(--stone);
+}
+
+/* ================================
+   Activity Timeline
+   ================================ */
+.timeline {
+  position: relative;
+  padding-left: 22px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: var(--hairline);
+}
+.tl-item {
+  position: relative;
+  padding: 6px 0 14px 8px;
+}
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: -18px;
+  top: 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--sky);
+  border: 2px solid white;
+  box-shadow: 0 0 0 1.5px var(--sky);
+}
+.tl-item.add::before { background: var(--success); box-shadow: 0 0 0 1.5px var(--success); }
+.tl-item.edit::before { background: var(--warning); box-shadow: 0 0 0 1.5px var(--warning); }
+.tl-item.remove::before { background: var(--critical); box-shadow: 0 0 0 1.5px var(--critical); }
+.tl-item.comment::before { background: var(--lavender); box-shadow: 0 0 0 1.5px var(--lavender); }
+.tl-time {
+  font-size: 11px;
+  color: var(--steel);
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.tl-text {
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.55;
+}
+.tl-text b {
+  font-weight: 700;
+  color: var(--ink-deep);
+}
+.tl-text .tag {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--charcoal);
+  background: var(--surface-soft);
+  margin: 0 2px;
+}
+
+/* ================================
+   Budget
+   ================================ */
+.budget-summary {
+  background: linear-gradient(135deg, var(--coral) 0%, var(--sun) 100%);
+  border-radius: var(--r-xl);
+  padding: 20px;
+  color: white;
+  margin-bottom: 16px;
+}
+.budget-total {
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.95;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.budget-amount {
+  font-size: 30px;
+  font-weight: 800;
+  margin-top: 4px;
+  letter-spacing: -0.6px;
+}
+.budget-split {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+.budget-split-item {
+  flex: 1;
+}
+.budget-split-item .label {
+  font-size: 11px;
+  opacity: 0.9;
+  font-weight: 600;
+}
+.budget-split-item .amount {
+  font-size: 15px;
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+.budget-item .item-header {
+  align-items: center;
+}
+.budget-cost {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink-deep);
+  white-space: nowrap;
+}
+.budget-cat {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+  background: var(--sky-soft);
+  color: var(--sky-deep);
+  letter-spacing: 0.3px;
+}
+
+/* ================================
+   Info screen (숙소/교통)
+   ================================ */
+.info-card {
+  background: white;
+  border: 1px solid var(--hairline-soft);
+  border-radius: var(--r-xl);
+  padding: 18px;
+  margin-bottom: 12px;
+}
+.info-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--steel);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.info-value {
+  font-size: 15px;
+  color: var(--ink-deep);
+  font-weight: 500;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ================================
+   Comments (게시판)
+   ================================ */
+.comment-item {
+  background: var(--surface-soft);
+  border-radius: var(--r-lg);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+.comment-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.comment-header .mini-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.comment-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.comment-time {
+  font-size: 11px;
+  color: var(--steel);
+  margin-left: auto;
+}
+.comment-body {
+  font-size: 14px;
+  color: var(--charcoal);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ================================
+   Sync status pill (bottom-left of home)
+   ================================ */
+.sync-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: var(--r-full);
+  background: var(--surface-soft);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--steel);
+}
+.sync-pill .sync-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--stone);
+}
+.sync-pill.online .sync-dot { background: var(--success); box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2); }
+.sync-pill.local .sync-dot { background: var(--warning); }
+
+/* ================================
+   Toast
+   ================================ */
+.toast {
+  position: fixed;
+  bottom: calc(var(--tabbar-h) + 20px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink-deep);
+  color: white;
+  padding: 10px 18px;
+  border-radius: var(--r-full);
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 200;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: var(--shadow-lg);
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-8px);
+}
+
+/* ================================
+   Setup / Firebase config screen
+   ================================ */
+.setup-note {
+  background: var(--sun-soft);
+  border: 1px solid #FDE68A;
+  border-radius: var(--r-lg);
+  padding: 12px 14px;
+  font-size: 12.5px;
+  color: #92400E;
+  line-height: 1.55;
+  margin-bottom: 16px;
+}
+.setup-note b { color: #78350F; }
+.setup-note code {
+  background: rgba(255, 255, 255, 0.6);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: 'SF Mono', Menlo, monospace;
+  font-size: 11.5px;
+}
+
+.settings-section {
+  background: white;
+  border: 1px solid var(--hairline-soft);
+  border-radius: var(--r-xl);
+  padding: 4px 4px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 14px;
+  border-bottom: 1px solid var(--hairline-soft);
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row .lbl {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.settings-row .val {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--steel);
+  font-weight: 500;
+}
+.settings-row.tap:active { background: var(--surface-soft); }
+
+/* Utils */
+.spacer-16 { height: 16px; }
+.spacer-24 { height: 24px; }
+.hidden { display: none !important; }
+.text-center { text-align: center; }
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+
+  </style>
+
+  <!-- Firebase (compat SDK, 스크립트 태그로 간단 사용) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+  <script>
+/**
+ * Firebase 설정
+ * 
+ * 【사용 방법】
+ * 1. https://console.firebase.google.com/ 에서 프로젝트 생성 (무료)
+ * 2. 왼쪽 메뉴 "Build" → "Realtime Database" → "데이터베이스 만들기"
+ *    → 위치: asia-southeast1 (싱가포르)
+ *    → 보안 규칙: "테스트 모드로 시작" 선택 (30일간 자유롭게 읽기/쓰기)
+ * 3. 프로젝트 개요 → 웹 앱 추가 (</> 아이콘) → 앱 이름 입력 → 등록
+ * 4. 나타나는 firebaseConfig 값을 아래에 그대로 복사/붙여넣기
+ * 5. Git에 커밋 후 push (Firebase 웹 config는 공개해도 안전한 값입니다)
+ * 
+ * 【Firebase 없이 사용하기】
+ * 아래 값을 그대로 두면 localStorage로 로컬 저장됩니다 (혼자만 볼 수 있음).
+ * 나중에 언제든지 앱 내 "설정" 화면에서 Firebase 설정을 붙여넣을 수 있어요.
+ */
+
+window.FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDiXErVtYYHQzj9DCSCkRGMBl4aQaUYJEg",
+  authDomain: "najjangim-summer.firebaseapp.com",
+  databaseURL: "https://najjangim-summer-default-rtdb.firebaseio.com",
+  projectId: "najjangim-summer",
+  storageBucket: "najjangim-summer.firebasestorage.app",
+  messagingSenderId: "1007905433450",
+  appId: "1:1007905433450:web:900faa271f79b52e846713"
+};
+
+// 여행 정보 (원한다면 여기서 변경 가능)
+window.TRIP_INFO = {
+  title: "경주 여행",
+  destination: "경주",
+  startDate: "2026-08-29",
+  endDate: "2026-08-30",
+  members: ["민주", "희주", "나원"],
+  // 경주 좌표 (날씨 API용)
+  lat: 35.8562,
+  lon: 129.2247,
+  // Firebase Realtime DB에서 이 여행 데이터가 저장될 경로
+  roomId: "gyeongju-2026-summer"
+};
+
+  </script>
 </head>
 <body>
 
-<div id="nickModal">
-  <div class="nickCard">
-    <div class="stamp">HI</div>
-    <h2>누구신가요?</h2>
-    <p>닉네임을 등록하면 이 기기에서 계속 같은 이름으로 기록돼요.<br>수정 이력에 이름이 남습니다.</p>
-    <input id="nickInput" placeholder="닉네임 (예: 민수)" maxlength="10">
-    <button class="btn btn-primary" onclick="registerNickname()">시작하기</button>
+  <!-- ===================== 온보딩 (닉네임 등록) ===================== -->
+  <div id="onboarding" class="hidden"></div>
+
+  <!-- ===================== 앱 본체 ===================== -->
+  <div id="appShell" class="app hidden">
+
+    <!-- 헤더 -->
+    <header class="header">
+      <button id="headerBack" class="header-back hidden" aria-label="뒤로">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div id="headerTitle" class="header-title">경주 여행</div>
+      <div id="headerMe" class="header-me"></div>
+    </header>
+
+    <!-- ===================== 홈 ===================== -->
+    <section id="screen-home" class="screen active">
+      <div class="hero-card">
+        <div class="hero-label">GYEONGJU · SUMMER 2026</div>
+        <div class="hero-title">나짱임 경주여행🏄‍♂️</div>
+        <div class="hero-sub" id="tripDates">2026. 8. 29 ~ 8. 30</div>
+
+        <div class="dday-row">
+          <div id="ddayLabel" class="dday-label">D -</div>
+          <div id="ddayNum" class="dday-num">39</div>
+        </div>
+
+        <div id="weatherChip" class="weather-chip">
+          <span class="w-icon">☀️</span>
+          <span>날씨 불러오는 중…</span>
+        </div>
+      </div>
+
+      <div id="weatherForecast" style="font-size:11.5px;color:var(--steel);text-align:center;margin:-8px 4px 12px;font-weight:600"></div>
+
+      <div class="section-title-row">
+        <div class="section-title">함께하는 사람</div>
+        <div id="syncPill" class="sync-pill local">
+          <span class="sync-dot"></span>
+          <span class="sync-text">로컬 저장 모드</span>
+        </div>
+      </div>
+      <div id="membersRow" class="members-row"></div>
+
+      <div class="section-title">여행 계획</div>
+      <div class="menu-grid">
+
+        <button class="menu-card" data-route="schedule">
+          <div class="icon-blob b-sky">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </div>
+          <div class="title">일정표</div>
+          <div class="meta" id="cnt-schedule">비어 있음</div>
+        </button>
+
+        <button class="menu-card" data-route="wishlist">
+          <div class="icon-blob b-coral">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div class="title">가고 싶은 곳</div>
+          <div class="meta" id="cnt-wishlist">비어 있음</div>
+        </button>
+
+        <button class="menu-card" data-route="foods">
+          <div class="icon-blob b-sun">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 2v6M12 2v6M16 2v6M4 8h16v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8z"/><path d="M12 15v7"/></svg>
+          </div>
+          <div class="title">먹고 싶은 음식</div>
+          <div class="meta" id="cnt-foods">비어 있음</div>
+        </button>
+
+        <button class="menu-card" data-route="checklist">
+          <div class="icon-blob b-mint">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <div class="title">준비물</div>
+          <div class="meta" id="cnt-checklist">비어 있음</div>
+        </button>
+
+        <button class="menu-card" data-route="budget">
+          <div class="icon-blob b-rose">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="title">예산 · 분담</div>
+          <div class="meta" id="cnt-budget">비어 있음</div>
+        </button>
+
+        <button class="menu-card" data-route="stay">
+          <div class="icon-blob b-lavender">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 21V8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v13"/><path d="M3 14h18M9 21v-6M15 21v-6"/></svg>
+          </div>
+          <div class="title">숙소 정보</div>
+          <div class="meta" id="cnt-stay">비어 있음</div>
+        </button>
+
+        <button class="menu-card" data-route="transport">
+          <div class="icon-blob b-sand">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 10h18M7 14h.01M17 14h.01"/><path d="M6 18v2M18 18v2"/></svg>
+          </div>
+          <div class="title">교통편</div>
+          <div class="meta" id="cnt-transport">비어 있음</div>
+        </button>
+
+        <button class="menu-card" data-route="memos">
+          <div class="icon-blob b-slate">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="title">자유 게시판</div>
+          <div class="meta" id="cnt-memos">비어 있음</div>
+        </button>
+
+      </div>
+
+      <div class="spacer-24"></div>
+    </section>
+
+    <!-- ===================== 각 섹션 (공통 구조) ===================== -->
+    <section id="screen-schedule" class="screen">
+      <div class="list-body"></div>
+    </section>
+    <section id="screen-wishlist" class="screen">
+      <div class="list-body"></div>
+    </section>
+    <section id="screen-foods" class="screen">
+      <div class="list-body"></div>
+    </section>
+    <section id="screen-checklist" class="screen">
+      <div class="list-body"></div>
+    </section>
+    <section id="screen-budget" class="screen">
+      <div class="list-body"></div>
+    </section>
+    <section id="screen-stay" class="screen">
+      <div class="list-body"></div>
+    </section>
+    <section id="screen-transport" class="screen">
+      <div class="list-body"></div>
+    </section>
+    <section id="screen-memos" class="screen">
+      <div class="list-body"></div>
+    </section>
+    <section id="screen-activity" class="screen">
+      <div class="list-body"></div>
+    </section>
+    <section id="screen-settings" class="screen">
+      <div class="list-body"></div>
+    </section>
+
+    <!-- ===================== 탭바 ===================== -->
+    <nav class="tabbar">
+      <button class="tab-btn active" data-tab="home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+        <span>홈</span>
+      </button>
+      <button class="tab-btn" data-tab="activity">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        <span>수정 이력</span>
+      </button>
+      <button class="tab-btn" data-tab="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>설정</span>
+      </button>
+    </nav>
+
   </div>
-</div>
 
-<header class="cover">
-  <div class="eyebrow">Summer Trip · 3 People</div>
-  <h1>우리 셋의 여름휴가</h1>
-  <div class="sub">일정도, 하고 싶은 것도 여기서 같이 채워요</div>
-  <div class="who">지금 접속: <span class="badge" id="myNickTag">-</span></div>
-  <div class="members" id="memberChips"></div>
-</header>
-
-<div class="setup-warn" id="setupWarn">
-  ⚠ 아직 Firebase 연결이 설정되지 않았어요. 아래 <code>firebaseConfig</code> 부분을 본인 Firebase 프로젝트 값으로 바꿔야 세 명이 실제로 데이터를 공유할 수 있어요. (하단 안내 참고)
-</div>
-
-<main>
-  <div class="panel active" id="panel-itinerary">
-    <div id="dayList"></div>
-    <button class="add-day-btn" onclick="addDay()">+ 날짜 추가</button>
+  <!-- ===================== 모달 오버레이 ===================== -->
+  <div id="modalOverlay" class="modal-overlay">
+    <div class="modal" id="modalBody"></div>
   </div>
 
-  <div class="panel" id="panel-wishlist">
-    <div class="add-wish" style="margin-bottom:18px;">
-      <textarea id="wishInput" placeholder="예: 노을 보면서 맥주 마시기"></textarea>
-      <button class="btn btn-coral" onclick="addWish()">추가</button>
-    </div>
-    <div class="wish-grid" id="wishGrid"></div>
-  </div>
+  <!-- ===================== 토스트 ===================== -->
+  <div id="toast" class="toast"></div>
 
-  <div class="panel" id="panel-log">
-    <div id="logList"></div>
-  </div>
-</main>
+  <script>
+/* ================================================================
+   경주 여행 공유 앱 - 메인 로직
+   - Firebase Realtime DB 우선, 미설정 시 localStorage fallback
+   - 닉네임 등록 → 홈 → 각 섹션 CRUD → 활동 타임라인
+================================================================ */
 
-<nav class="bottom-nav">
-  <div class="nav-item active" data-tab="itinerary"><i class="ti ti-map-pin"></i><span>여행 계획</span></div>
-  <div class="nav-item" data-tab="wishlist"><i class="ti ti-heart"></i><span>하고 싶은 거</span></div>
-  <div class="nav-item" data-tab="log"><i class="ti ti-history"></i><span>수정 이력</span></div>
-</nav>
+(function () {
+  'use strict';
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script>
-/* =====================================================================
-   1. Firebase 설정 — 반드시 본인 프로젝트 값으로 교체하세요.
-   Firebase 콘솔(console.firebase.google.com) > 프로젝트 생성 > 웹 앱 추가
-   > Firestore Database 만들기(테스트 모드) 후 아래 config 값을 복붙하세요.
-   ===================================================================== */
-  const firebaseConfig = {
-    apiKey: "AIzaSyDiXErVtYYHQzj9DCSCkRGMBl4aQaUYJEg",
-    authDomain: "najjangim-summer.firebaseapp.com",
-    projectId: "najjangim-summer",
-    storageBucket: "najjangim-summer.firebasestorage.app",
-    messagingSenderId: "1007905433450",
-    appId: "1:1007905433450:web:879984c02ef5d9fa846713"
+  // ------------------------------------------------
+  // 0. 유틸
+  // ------------------------------------------------
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const now = () => Date.now();
+
+  const MEMBER_COLORS = {
+    '민주': '#38BDF8',
+    '희주': '#FF7A6B',
+    '나원': '#FFB020'
   };
-
-  const TRIP_ID = "summer-trip-3"; // 여러 여행에 재사용하고 싶으면 이 값을 바꾸세요
-
-  let db = null;
-  let firebaseReady = false;
-  try{
-    if(firebaseConfig.apiKey !== "YOUR_API_KEY"){
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore();
-      firebaseReady = true;
-      document.getElementById('setupWarn').style.display = 'none';
-    }
-  }catch(e){ console.error(e); }
-
-  const col = (name) => db.collection('trips').doc(TRIP_ID).collection(name);
-
-  /* ===================== 닉네임 ===================== */
-  let myNick = localStorage.getItem('tripNickname');
-  function registerNickname(){
-    const v = document.getElementById('nickInput').value.trim();
-    if(!v){ return; }
-    myNick = v;
-    localStorage.setItem('tripNickname', v);
-    document.getElementById('nickModal').classList.add('hidden');
-    document.getElementById('myNickTag').textContent = v;
-    if(firebaseReady){
-      col('members').doc(v).set({ nickname:v, lastSeen: Date.now() }, {merge:true});
-    }
-    boot();
+  const fallbackColors = ['#8B5CF6', '#10B981', '#EC4899', '#F59E0B', '#0EA5E9'];
+  function colorFor(name) {
+    if (MEMBER_COLORS[name]) return MEMBER_COLORS[name];
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+    return fallbackColors[h % fallbackColors.length];
   }
-  if(myNick){
-    document.getElementById('nickModal').classList.add('hidden');
-    document.getElementById('myNickTag').textContent = myNick;
+  function initial(name) { return (name || '?').trim().charAt(0); }
+
+  function fmtDate(d) {
+    const dt = new Date(d);
+    return `${dt.getMonth() + 1}월 ${dt.getDate()}일`;
+  }
+  function fmtDateTime(t) {
+    const dt = new Date(t);
+    const today = new Date();
+    const isToday = dt.toDateString() === today.toDateString();
+    const yst = new Date(today); yst.setDate(today.getDate() - 1);
+    const isYst = dt.toDateString() === yst.toDateString();
+    const hh = String(dt.getHours()).padStart(2, '0');
+    const mm = String(dt.getMinutes()).padStart(2, '0');
+    if (isToday) return `오늘 ${hh}:${mm}`;
+    if (isYst) return `어제 ${hh}:${mm}`;
+    return `${dt.getMonth() + 1}/${dt.getDate()} ${hh}:${mm}`;
+  }
+  function weekday(dateStr) {
+    const days = ['일', '월', '화', '수', '목', '금', '토'];
+    return days[new Date(dateStr).getDay()] + '요일';
   }
 
-  /* ===================== 탭 전환 ===================== */
-  document.querySelectorAll('.nav-item').forEach(t=>{
-    t.addEventListener('click', ()=>{
-      document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
-      document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
-      t.classList.add('active');
-      document.getElementById('panel-'+t.dataset.tab).classList.add('active');
-      window.scrollTo({top:0, behavior:'instant'});
-    });
+  function toast(msg) {
+    const el = $('#toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => el.classList.remove('show'), 1800);
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+  }
+
+  // ------------------------------------------------
+  // 1. 데이터 스토어 (Firebase 또는 localStorage)
+  // ------------------------------------------------
+  const TRIP = window.TRIP_INFO || {};
+  const CFG = window.FIREBASE_CONFIG || {};
+  const ROOM = TRIP.roomId || 'trip-room';
+  const LS_KEY = `trip_data_${ROOM}`;
+  const LS_ME = `trip_me_${ROOM}`;
+
+  const demoSchedule = () => ([
+    { id: uid(), day: 1, time: '09:00', title: 'KTX 경주역 도착', desc: '역 앞에서 집합 후 렌터카 픽업', by: '민주', at: now() },
+    { id: uid(), day: 1, time: '10:30', title: '대릉원 & 첨성대', desc: '천마총 관람, 사진 촬영', by: '희주', at: now() },
+    { id: uid(), day: 1, time: '12:30', title: '황리단길 점심', desc: '맛집 리스트 참고', by: '나원', at: now() },
+    { id: uid(), day: 1, time: '15:00', title: '불국사 & 석굴암', desc: '입장권 미리 확인', by: '민주', at: now() },
+    { id: uid(), day: 1, time: '18:30', title: '숙소 체크인 & 저녁', desc: '', by: '희주', at: now() },
+    { id: uid(), day: 2, time: '09:30', title: '동궁과 월지 산책', desc: '오전 조용할 때 방문', by: '나원', at: now() },
+    { id: uid(), day: 2, time: '11:00', title: '보문관광단지', desc: '경주월드 or 호수 산책 선택', by: '민주', at: now() },
+    { id: uid(), day: 2, time: '13:00', title: '점심 & 카페', desc: '', by: '희주', at: now() },
+    { id: uid(), day: 2, time: '15:00', title: '경주역 출발', desc: '기념품 구매 후 이동', by: '나원', at: now() }
+  ]);
+
+  const emptyData = () => ({
+    schedule: demoSchedule(),   // {id, day, time, title, desc, by, at, editedBy, editedAt}
+    wishlist: [],   // {id, title, desc, mapUrl, by, at, ...}
+    foods: [],
+    checklist: [],  // {id, title, checked, by, at, checkedBy, checkedAt}
+    budget: [],     // {id, title, amount, category, by, at}
+    stay: { content: '', by: '', at: 0 },
+    transport: { content: '', by: '', at: 0 },
+    memos: [],      // 자유 게시판 글: {id, name, body, at}
+    activity: []    // 이력 로그
   });
 
-  /* ===================== 유틸 ===================== */
-  function fmtTime(ts){
-    const d = new Date(ts);
-    return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-  }
-  function uid(){ return Math.random().toString(36).slice(2,10); }
+  const store = {
+    mode: 'local',   // 'firebase' | 'local'
+    data: emptyData(),
+    me: null,
+    listeners: [],
+    fbRef: null,
+    _skipNextRemote: false,
 
-  async function addLog(action, detail){
-    if(!firebaseReady) return;
-    await col('logs').add({
-      nickname: myNick, action, detail, ts: Date.now()
+    onChange(fn) { this.listeners.push(fn); },
+    emit() { this.listeners.forEach(fn => fn(this.data)); },
+
+    async init() {
+      // load me
+      try { this.me = JSON.parse(localStorage.getItem(LS_ME) || 'null'); } catch (e) { this.me = null; }
+
+      // try firebase
+      const hasFb = CFG.apiKey && CFG.databaseURL && window.firebase;
+      if (hasFb) {
+        try {
+          if (!firebase.apps.length) firebase.initializeApp(CFG);
+          this.fbRef = firebase.database().ref(`rooms/${ROOM}`);
+          this.mode = 'firebase';
+          // realtime listener
+          this.fbRef.on('value', (snap) => {
+            const val = snap.val();
+            if (val) {
+              this.data = Object.assign(emptyData(), val);
+              // ensure arrays
+              ['schedule', 'wishlist', 'foods', 'checklist', 'budget', 'memos', 'activity'].forEach(k => {
+                if (!Array.isArray(this.data[k])) this.data[k] = [];
+              });
+              if (!this.data.stay) this.data.stay = { content: '', by: '', at: 0 };
+              if (!this.data.transport) this.data.transport = { content: '', by: '', at: 0 };
+            } else {
+              this.data = emptyData();
+            }
+            this.emit();
+            updateSyncPill('online');
+          }, (err) => {
+            console.warn('Firebase read err', err);
+            this.mode = 'local';
+            updateSyncPill('local');
+          });
+          return;
+        } catch (e) {
+          console.warn('Firebase init failed, falling back:', e);
+          this.mode = 'local';
+        }
+      }
+
+      // localStorage load
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (raw) this.data = Object.assign(emptyData(), JSON.parse(raw));
+      } catch (e) {}
+      updateSyncPill('local');
+      // emit next tick so listeners bind first
+      setTimeout(() => this.emit(), 0);
+    },
+
+    async save() {
+      if (this.mode === 'firebase' && this.fbRef) {
+        try {
+          await this.fbRef.set(this.data);
+        } catch (e) {
+          console.warn('Firebase save err', e);
+          toast('저장 실패 — 잠시 후 다시 시도');
+        }
+      } else {
+        try { localStorage.setItem(LS_KEY, JSON.stringify(this.data)); } catch (e) {}
+        this.emit();
+      }
+    },
+
+    setMe(name) {
+      this.me = { name, joinedAt: now() };
+      try { localStorage.setItem(LS_ME, JSON.stringify(this.me)); } catch (e) {}
+    },
+
+    // 활동 로그 추가 (최근 100개)
+    log(type, section, title, extra) {
+      const item = {
+        id: uid(),
+        type,       // 'add' | 'edit' | 'remove' | 'check' | 'uncheck' | 'comment'
+        section,    // 'schedule' | 'wishlist' | ...
+        title: title || '',
+        by: this.me ? this.me.name : '알수없음',
+        at: now(),
+        extra: extra || ''
+      };
+      this.data.activity = [item, ...(this.data.activity || [])].slice(0, 100);
+    }
+  };
+
+  function updateSyncPill(state) {
+    const p = $('#syncPill');
+    if (!p) return;
+    p.classList.remove('online', 'local');
+    if (state === 'online') {
+      p.classList.add('online');
+      p.querySelector('.sync-text').textContent = '실시간 동기화 중';
+    } else {
+      p.classList.add('local');
+      p.querySelector('.sync-text').textContent = '로컬 저장 모드';
+    }
+  }
+
+  // ------------------------------------------------
+  // 2. 라우터 (해시 기반)
+  // ------------------------------------------------
+  const SECTIONS = {
+    home: '홈',
+    schedule: '일정표',
+    wishlist: '가고 싶은 장소',
+    foods: '먹고 싶은 음식',
+    checklist: '준비물',
+    budget: '예산 · 비용 분담',
+    stay: '숙소 정보',
+    transport: '교통편',
+    memos: '자유 게시판',
+    activity: '수정 이력',
+    settings: '설정'
+  };
+
+  function navigate(name) {
+    if (!SECTIONS[name]) name = 'home';
+    location.hash = '#' + name;
+  }
+  function currentRoute() {
+    const h = (location.hash || '').replace('#', '');
+    return SECTIONS[h] ? h : 'home';
+  }
+
+  function renderRoute() {
+    if (!store.me) {
+      $('#onboarding').classList.remove('hidden');
+      $('#appShell').classList.add('hidden');
+      return;
+    }
+    $('#onboarding').classList.add('hidden');
+    $('#appShell').classList.remove('hidden');
+
+    const route = currentRoute();
+    $$('.screen').forEach(s => s.classList.remove('active'));
+    const target = $(`#screen-${route}`);
+    if (target) target.classList.add('active');
+
+    // Header
+    const isHome = route === 'home';
+    $('#headerBack').classList.toggle('hidden', isHome);
+    $('#headerTitle').textContent = isHome ? '경주 여행' : SECTIONS[route];
+    $('#headerMe').classList.toggle('hidden', !isHome);
+
+    // Tabs
+    $$('.tab-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.tab === route ||
+        (route !== 'activity' && route !== 'settings' && b.dataset.tab === 'home'));
+    });
+
+    // Render each screen
+    if (route === 'home') renderHome();
+    else if (route === 'schedule') renderSchedule();
+    else if (route === 'wishlist') renderWishlist();
+    else if (route === 'foods') renderFoods();
+    else if (route === 'checklist') renderChecklist();
+    else if (route === 'budget') renderBudget();
+    else if (route === 'stay') renderStay();
+    else if (route === 'transport') renderTransport();
+    else if (route === 'memos') renderMemos();
+    else if (route === 'activity') renderActivity();
+    else if (route === 'settings') renderSettings();
+
+    window.scrollTo(0, 0);
+  }
+
+  // ------------------------------------------------
+  // 3. 홈
+  // ------------------------------------------------
+  function calcDday() {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const start = new Date(TRIP.startDate); start.setHours(0, 0, 0, 0);
+    const diff = Math.round((start - today) / 86400000);
+    if (diff > 0) return { label: 'D -', num: diff };
+    if (diff === 0) return { label: 'D', num: 'DAY' };
+    return { label: 'D +', num: Math.abs(diff) };
+  }
+
+  function renderHome() {
+    const dd = calcDday();
+    $('#ddayNum').textContent = dd.num;
+    $('#ddayLabel').textContent = dd.label + (typeof dd.num === 'number' ? '' : '');
+    if (typeof dd.num !== 'number') {
+      $('#ddayNum').style.fontSize = '38px';
+    }
+
+    const start = new Date(TRIP.startDate);
+    const end = new Date(TRIP.endDate);
+    $('#tripDates').textContent =
+      `${start.getFullYear()}. ${start.getMonth() + 1}. ${start.getDate()} ~ ${end.getMonth() + 1}. ${end.getDate()} · ${weekday(TRIP.startDate).slice(0, 1)}·${weekday(TRIP.endDate).slice(0, 1)}`;
+
+    // members
+    const mr = $('#membersRow');
+    mr.innerHTML = TRIP.members.map(n => `
+      <div class="member-chip">
+        <div class="member-avatar" style="background:${colorFor(n)}">${escapeHtml(initial(n))}</div>
+        <span>${escapeHtml(n)}</span>
+      </div>
+    `).join('');
+
+    // header me
+    const me = store.me.name;
+    $('#headerMe').innerHTML = `<span class="dot" style="background:${colorFor(me)}"></span><span>${escapeHtml(me)}</span>`;
+    $('#headerMe').style.background = colorFor(me) + '22';
+    $('#headerMe').style.color = colorFor(me);
+
+    // counts
+    const d = store.data;
+    $('#cnt-schedule').textContent = d.schedule.length ? `${d.schedule.length}건` : '비어 있음';
+    $('#cnt-wishlist').textContent = d.wishlist.length ? `${d.wishlist.length}곳` : '비어 있음';
+    $('#cnt-foods').textContent = d.foods.length ? `${d.foods.length}개` : '비어 있음';
+    const done = d.checklist.filter(i => i.checked).length;
+    $('#cnt-checklist').textContent = d.checklist.length ? `${done}/${d.checklist.length}` : '비어 있음';
+    const total = d.budget.reduce((s, b) => s + (Number(b.amount) || 0), 0);
+    $('#cnt-budget').textContent = total ? `${total.toLocaleString()}원` : '비어 있음';
+    $('#cnt-stay').textContent = d.stay.content ? '작성됨' : '비어 있음';
+    $('#cnt-transport').textContent = d.transport.content ? '작성됨' : '비어 있음';
+    $('#cnt-memos').textContent = d.memos.length ? `${d.memos.length}개` : '비어 있음';
+  }
+
+  // 날씨 (Open-Meteo, 무료 / 키 없음)
+  async function fetchWeather() {
+    try {
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${TRIP.lat}&longitude=${TRIP.lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=Asia%2FSeoul&start_date=${TRIP.startDate}&end_date=${TRIP.endDate}`;
+      const r = await fetch(url);
+      if (!r.ok) throw new Error('weather http ' + r.status);
+      const j = await r.json();
+      const wchip = $('#weatherChip');
+      const today = j.current;
+      const wdesc = weatherText(today.weather_code);
+      wchip.innerHTML = `<span class="w-icon">${weatherEmoji(today.weather_code)}</span>
+        <span>지금 경주 ${Math.round(today.temperature_2m)}° · ${wdesc}</span>`;
+      // trip days forecast
+      if (j.daily && j.daily.time) {
+        const tips = j.daily.time.map((d, i) =>
+          `${fmtDate(d)} ${weatherEmoji(j.daily.weather_code[i])} ${Math.round(j.daily.temperature_2m_min[i])}° ~ ${Math.round(j.daily.temperature_2m_max[i])}°`
+        ).join('  ·  ');
+        $('#weatherForecast').textContent = tips;
+      }
+    } catch (e) {
+      $('#weatherChip').innerHTML = `<span class="w-icon">☁️</span><span>날씨 정보 불러오는 중…</span>`;
+    }
+  }
+  function weatherEmoji(code) {
+    if (code == null) return '☁️';
+    if (code === 0) return '☀️';
+    if (code <= 2) return '🌤️';
+    if (code === 3) return '☁️';
+    if (code >= 45 && code <= 48) return '🌫️';
+    if (code >= 51 && code <= 67) return '🌧️';
+    if (code >= 71 && code <= 77) return '❄️';
+    if (code >= 80 && code <= 82) return '🌦️';
+    if (code >= 95) return '⛈️';
+    return '☁️';
+  }
+  function weatherText(code) {
+    if (code === 0) return '맑음';
+    if (code <= 2) return '대체로 맑음';
+    if (code === 3) return '흐림';
+    if (code >= 45 && code <= 48) return '안개';
+    if (code >= 51 && code <= 67) return '비';
+    if (code >= 71 && code <= 77) return '눈';
+    if (code >= 80 && code <= 82) return '소나기';
+    if (code >= 95) return '뇌우';
+    return '흐림';
+  }
+
+  // ------------------------------------------------
+  // 4. 공통 CRUD 렌더 헬퍼
+  // ------------------------------------------------
+  function metaLine(item) {
+    const by = item.by || '?';
+    const at = item.at ? fmtDateTime(item.at) : '';
+    const edited = item.editedBy && item.editedBy !== item.by;
+    const editedAt = item.editedAt ? fmtDateTime(item.editedAt) : '';
+    let html = `
+      <span class="by">
+        <span class="mini-avatar" style="background:${colorFor(by)}">${escapeHtml(initial(by))}</span>
+        ${escapeHtml(by)}
+      </span>
+      <span class="dot-sep">·</span>
+      <span>${at}</span>
+    `;
+    if (edited || (item.editedAt && item.editedAt !== item.at)) {
+      html += `<span class="dot-sep">·</span><span style="color:var(--warning);font-weight:600">${escapeHtml(item.editedBy || by)} 수정 ${editedAt}</span>`;
+    }
+    return html;
+  }
+
+  function itemActions(section, id) {
+    return `
+      <div class="item-actions">
+        <button class="icon-btn" data-act="edit" data-section="${section}" data-id="${id}" aria-label="수정">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="icon-btn danger" data-act="delete" data-section="${section}" data-id="${id}" aria-label="삭제">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        </button>
+      </div>
+    `;
+  }
+
+  function emptyState(text, hint) {
+    return `
+      <div class="empty">
+        <div class="empty-icon">🏖️</div>
+        <div class="empty-text">${escapeHtml(text)}</div>
+        <div class="empty-hint">${escapeHtml(hint || '')}</div>
+      </div>
+    `;
+  }
+
+  // ------------------------------------------------
+  // 5. 일정표
+  // ------------------------------------------------
+  function renderSchedule() {
+    const container = $('#screen-schedule .list-body');
+    const items = store.data.schedule.slice().sort((a, b) => {
+      if (a.day !== b.day) return a.day - b.day;
+      return (a.time || '').localeCompare(b.time || '');
+    });
+
+    const days = [
+      { day: 1, date: TRIP.startDate },
+      { day: 2, date: TRIP.endDate }
+    ];
+
+    let html = '';
+    days.forEach(d => {
+      const dayItems = items.filter(i => i.day === d.day);
+      html += `
+        <div class="day-header">
+          <span class="day-badge">DAY ${d.day}</span>
+          <span class="day-date">${fmtDate(d.date)}</span>
+          <span class="day-weekday">${weekday(d.date)}</span>
+        </div>
+        <div class="list" style="margin-bottom:20px">
+      `;
+      if (!dayItems.length) {
+        html += `<div class="empty" style="padding:20px"><div class="empty-hint">아직 일정이 없어요</div></div>`;
+      } else {
+        dayItems.forEach(it => {
+          html += `
+            <div class="list-item">
+              <div class="item-header">
+                <div class="item-body">
+                  ${it.time ? `<div class="schedule-time">${escapeHtml(it.time)}</div>` : ''}
+                  <div class="item-title">${escapeHtml(it.title)}</div>
+                  ${it.desc ? `<div class="item-desc">${escapeHtml(it.desc)}</div>` : ''}
+                  <div class="item-foot">${metaLine(it)}</div>
+                </div>
+                ${itemActions('schedule', it.id)}
+              </div>
+            </div>
+          `;
+        });
+      }
+      html += `</div>`;
+    });
+
+    html += `<button class="add-btn" data-add="schedule">+ 일정 추가하기</button>`;
+    container.innerHTML = html;
+  }
+
+  function openScheduleModal(existing) {
+    openModal({
+      title: existing ? '일정 수정' : '일정 추가',
+      fields: [
+        { key: 'day', label: '날짜', type: 'select', options: [
+          { v: 1, l: `DAY 1 · ${fmtDate(TRIP.startDate)}` },
+          { v: 2, l: `DAY 2 · ${fmtDate(TRIP.endDate)}` }
+        ], value: existing?.day || 1 },
+        { key: 'time', label: '시간 (선택)', type: 'time', value: existing?.time || '' },
+        { key: 'title', label: '일정 제목', type: 'text', placeholder: '예: 첨성대 방문', required: true, value: existing?.title || '' },
+        { key: 'desc', label: '설명 (선택)', type: 'textarea', placeholder: '메모', value: existing?.desc || '' }
+      ],
+      onSubmit: (vals) => {
+        if (existing) {
+          const it = store.data.schedule.find(i => i.id === existing.id);
+          Object.assign(it, {
+            day: Number(vals.day), time: vals.time, title: vals.title, desc: vals.desc,
+            editedBy: store.me.name, editedAt: now()
+          });
+          store.log('edit', 'schedule', vals.title);
+          toast('일정을 수정했어요');
+        } else {
+          store.data.schedule.push({
+            id: uid(),
+            day: Number(vals.day),
+            time: vals.time,
+            title: vals.title,
+            desc: vals.desc,
+            by: store.me.name,
+            at: now()
+          });
+          store.log('add', 'schedule', vals.title);
+          toast('일정을 추가했어요');
+        }
+        store.save();
+      }
     });
   }
 
-  /* ===================== 로컬 폴백 저장(Firebase 미설정 시) ===================== */
-  function localGet(key, def){ try{ return JSON.parse(localStorage.getItem(key)) || def; }catch(e){ return def; } }
-  function localSet(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
-
-  let days = [];      // {id, title, items:[{id,time,title,memo,author,updatedBy,updatedAt}]}
-  let wishes = [];     // {id, content, author, ts}
-  let logs = [];        // {id, nickname, action, detail, ts}
-  let members = [];
-
-  /* ===================== 렌더링 ===================== */
-  function renderMembers(){
-    const wrap = document.getElementById('memberChips');
-    wrap.innerHTML = members.map(m=>`<span class="member-chip">${escapeHtml(m)}</span>`).join('');
+  // ------------------------------------------------
+  // 6. 위시리스트 (장소)
+  // ------------------------------------------------
+  function renderWishlist() {
+    const container = $('#screen-wishlist .list-body');
+    const items = store.data.wishlist;
+    if (!items.length) {
+      container.innerHTML = emptyState('가고 싶은 곳을 담아보세요', '지도 링크도 함께 저장할 수 있어요') +
+        `<button class="add-btn" style="margin-top:12px" data-add="wishlist">+ 장소 추가</button>`;
+      return;
+    }
+    let html = `<div class="list">`;
+    items.forEach(it => {
+      html += `
+        <div class="list-item">
+          <div class="item-header">
+            <div class="item-body">
+              <div class="item-title">${escapeHtml(it.title)}</div>
+              ${it.desc ? `<div class="item-desc">${escapeHtml(it.desc)}</div>` : ''}
+              ${it.mapUrl ? `<a href="${escapeHtml(it.mapUrl)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;margin-top:8px;font-size:12px;font-weight:700;color:var(--sky-deep)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                지도에서 보기
+              </a>` : `<button class="btn btn-ghost" style="padding:6px 14px;font-size:12px;margin-top:8px" data-map="${escapeHtml(it.title)}">
+                🗺 지도 검색
+              </button>`}
+              <div class="item-foot">${metaLine(it)}</div>
+            </div>
+            ${itemActions('wishlist', it.id)}
+          </div>
+        </div>
+      `;
+    });
+    html += `</div><button class="add-btn mt-16" data-add="wishlist">+ 장소 추가</button>`;
+    container.innerHTML = html;
   }
 
-  function renderDays(){
-    const wrap = document.getElementById('dayList');
-    if(days.length===0){ wrap.innerHTML = '<div class="empty">아직 등록된 날짜가 없어요. 아래 버튼으로 첫 날을 추가해보세요.</div>'; return; }
-    wrap.innerHTML = days.map((day, di)=>`
-      <div class="day-block">
-        <div class="day-head">
-          <div class="day-stamp"><small>DAY</small><b>${di+1}</b></div>
-          <input class="day-title-input" value="${escapeAttr(day.title||'')}" placeholder="예: 7/28 첫째날 · 강릉"
-            onchange="renameDay('${day.id}', this.value)">
-          <button class="day-del" onclick="deleteDay('${day.id}')" title="날짜 삭제">✕</button>
+  function openWishlistModal(existing) {
+    openModal({
+      title: existing ? '장소 수정' : '장소 추가',
+      fields: [
+        { key: 'title', label: '장소명', type: 'text', placeholder: '예: 불국사', required: true, value: existing?.title || '' },
+        { key: 'desc', label: '메모 (선택)', type: 'textarea', placeholder: '왜 가고 싶은지, 팁 등', value: existing?.desc || '' },
+        { key: 'mapUrl', label: '지도 링크 (선택)', type: 'text', placeholder: 'https://map.naver.com/...', value: existing?.mapUrl || '' }
+      ],
+      onSubmit: (vals) => {
+        if (existing) {
+          const it = store.data.wishlist.find(i => i.id === existing.id);
+          Object.assign(it, { title: vals.title, desc: vals.desc, mapUrl: vals.mapUrl, editedBy: store.me.name, editedAt: now() });
+          store.log('edit', 'wishlist', vals.title);
+          toast('장소를 수정했어요');
+        } else {
+          store.data.wishlist.push({
+            id: uid(), title: vals.title, desc: vals.desc, mapUrl: vals.mapUrl,
+            by: store.me.name, at: now()
+          });
+          store.log('add', 'wishlist', vals.title);
+          toast('장소를 추가했어요');
+        }
+        store.save();
+      }
+    });
+  }
+
+  // ------------------------------------------------
+  // 7. 먹고 싶은 음식
+  // ------------------------------------------------
+  function renderFoods() {
+    const container = $('#screen-foods .list-body');
+    const items = store.data.foods;
+    if (!items.length) {
+      container.innerHTML = emptyState('먹고 싶은 음식을 담아요', '식당 이름이나 메뉴를 자유롭게') +
+        `<button class="add-btn" style="margin-top:12px" data-add="foods">+ 음식 추가</button>`;
+      return;
+    }
+    let html = `<div class="list">`;
+    items.forEach(it => {
+      html += `
+        <div class="list-item">
+          <div class="item-header">
+            <div class="item-body">
+              <div class="item-title">${escapeHtml(it.title)}</div>
+              ${it.desc ? `<div class="item-desc">${escapeHtml(it.desc)}</div>` : ''}
+              <div class="item-foot">${metaLine(it)}</div>
+            </div>
+            ${itemActions('foods', it.id)}
+          </div>
         </div>
-        <div>
-          ${(day.items||[]).map(it=>`
-            <div class="item-row">
-              <div class="item-time">${escapeHtml(it.time||'')}</div>
-              <div class="item-body">
-                <p class="item-title">${escapeHtml(it.title)}</p>
-                ${it.memo ? `<p class="item-memo">${escapeHtml(it.memo)}</p>` : ''}
-                <div class="item-meta">최근 수정: ${escapeHtml(it.updatedBy||it.author)} · ${fmtTime(it.updatedAt||it.createdAt)}</div>
-              </div>
-              <div class="item-actions">
-                <button class="icon-btn" onclick="deleteItem('${day.id}','${it.id}')" title="삭제">✕</button>
+      `;
+    });
+    html += `</div><button class="add-btn mt-16" data-add="foods">+ 음식 추가</button>`;
+    container.innerHTML = html;
+  }
+
+  function openFoodsModal(existing) {
+    openModal({
+      title: existing ? '음식 수정' : '음식 추가',
+      fields: [
+        { key: 'title', label: '음식 / 식당', type: 'text', placeholder: '예: 황리단길 교리김밥', required: true, value: existing?.title || '' },
+        { key: 'desc', label: '메모 (선택)', type: 'textarea', placeholder: '가격대, 이유 등', value: existing?.desc || '' }
+      ],
+      onSubmit: (vals) => {
+        if (existing) {
+          const it = store.data.foods.find(i => i.id === existing.id);
+          Object.assign(it, { title: vals.title, desc: vals.desc, editedBy: store.me.name, editedAt: now() });
+          store.log('edit', 'foods', vals.title);
+          toast('수정했어요');
+        } else {
+          store.data.foods.push({ id: uid(), title: vals.title, desc: vals.desc, by: store.me.name, at: now() });
+          store.log('add', 'foods', vals.title);
+          toast('추가했어요');
+        }
+        store.save();
+      }
+    });
+  }
+
+  // ------------------------------------------------
+  // 8. 준비물 체크리스트
+  // ------------------------------------------------
+  function renderChecklist() {
+    const container = $('#screen-checklist .list-body');
+    const items = store.data.checklist;
+    if (!items.length) {
+      container.innerHTML = emptyState('준비물을 하나씩 담아요', '체크박스를 눌러 완료 표시') +
+        `<button class="add-btn" style="margin-top:12px" data-add="checklist">+ 준비물 추가</button>`;
+      return;
+    }
+    // 미완료 먼저
+    const sorted = items.slice().sort((a, b) => (a.checked ? 1 : 0) - (b.checked ? 1 : 0));
+    let html = `<div class="list">`;
+    sorted.forEach(it => {
+      html += `
+        <div class="list-item ${it.checked ? 'checked' : ''}">
+          <div class="item-header">
+            <div class="check-box ${it.checked ? 'checked' : ''}" data-check="${it.id}" role="checkbox" aria-checked="${it.checked}"></div>
+            <div class="item-body">
+              <div class="item-title">${escapeHtml(it.title)}</div>
+              <div class="item-foot">
+                ${metaLine(it)}
+                ${it.checked && it.checkedBy ? `
+                  <span class="dot-sep">·</span>
+                  <span style="color:var(--success);font-weight:600">${escapeHtml(it.checkedBy)} 완료 ${fmtDateTime(it.checkedAt)}</span>
+                ` : ''}
               </div>
             </div>
-          `).join('')}
+            ${itemActions('checklist', it.id)}
+          </div>
         </div>
-        <div class="add-item-row">
-          <input type="text" placeholder="시간" name="time" style="width:70px" id="time-${day.id}">
-          <input type="text" placeholder="할 일 / 장소" name="title" id="title-${day.id}">
-          <input type="text" placeholder="메모(선택)" name="memo" id="memo-${day.id}">
-          <button class="btn btn-ghost" onclick="addItem('${day.id}')">+ 추가</button>
-        </div>
-      </div>
-    `).join('');
+      `;
+    });
+    html += `</div><button class="add-btn mt-16" data-add="checklist">+ 준비물 추가</button>`;
+    container.innerHTML = html;
   }
 
-  function renderWishes(){
-    const wrap = document.getElementById('wishGrid');
-    if(wishes.length===0){ wrap.innerHTML = '<div class="empty" style="grid-column:1/-1">아직 아무도 하고 싶은 걸 안 적었어요.</div>'; return; }
-    wrap.innerHTML = wishes.slice().reverse().map(w=>`
-      <div class="postcard">
-        <button class="icon-btn del" onclick="deleteWish('${w.id}')">✕</button>
-        <div class="content">${escapeHtml(w.content)}</div>
-        <div class="foot">
-          <span class="author">${escapeHtml(w.author)}</span>
-          <span class="date">${fmtTime(w.ts)}</span>
-        </div>
-      </div>
-    `).join('');
+  function openChecklistModal(existing) {
+    openModal({
+      title: existing ? '준비물 수정' : '준비물 추가',
+      fields: [
+        { key: 'title', label: '준비물', type: 'text', placeholder: '예: 자외선 차단제', required: true, value: existing?.title || '' }
+      ],
+      onSubmit: (vals) => {
+        if (existing) {
+          const it = store.data.checklist.find(i => i.id === existing.id);
+          Object.assign(it, { title: vals.title, editedBy: store.me.name, editedAt: now() });
+          store.log('edit', 'checklist', vals.title);
+        } else {
+          store.data.checklist.push({ id: uid(), title: vals.title, checked: false, by: store.me.name, at: now() });
+          store.log('add', 'checklist', vals.title);
+        }
+        store.save();
+        toast('저장했어요');
+      }
+    });
   }
 
-  function renderLogs(){
-    const wrap = document.getElementById('logList');
-    if(logs.length===0){ wrap.innerHTML = '<div class="empty">아직 활동 기록이 없어요.</div>'; return; }
-    wrap.innerHTML = logs.slice().sort((a,b)=>b.ts-a.ts).map(l=>`
-      <div class="log-item">
-        <div class="dot"></div>
-        <div>
-          <span><b>${escapeHtml(l.nickname)}</b>님이 ${escapeHtml(l.detail)}</span>
-          <span class="t">${fmtTime(l.ts)}</span>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  function escapeHtml(s){ const d=document.createElement('div'); d.innerText = s==null?'':String(s); return d.innerHTML; }
-  function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
-
-  /* ===================== CRUD ===================== */
-  function persistLocalAll(){
-    localSet('days', days); localSet('wishes', wishes); localSet('logs', logs); localSet('members', members);
-  }
-
-  function addDay(){
-    const d = { id: uid(), title:'', items:[] };
-    days.push(d);
-    if(firebaseReady){ col('days').doc(d.id).set(d); }
-    else { persistLocalAll(); renderDays(); }
-    addLogLocalAware('add', '새 날짜를 추가했어요');
-  }
-  function renameDay(id, title){
-    const d = days.find(x=>x.id===id); if(!d) return; d.title = title;
-    if(firebaseReady){ col('days').doc(id).update({title}); }
-    else { persistLocalAll(); }
-    addLogLocalAware('edit', `날짜 이름을 "${title}"(으)로 수정했어요`);
-  }
-  function deleteDay(id){
-    if(!confirm('이 날짜와 모든 일정을 삭제할까요?')) return;
-    days = days.filter(x=>x.id!==id);
-    if(firebaseReady){ col('days').doc(id).delete(); }
-    else { persistLocalAll(); renderDays(); }
-    addLogLocalAware('delete', '날짜를 삭제했어요');
-  }
-  function addItem(dayId){
-    const time = document.getElementById('time-'+dayId).value.trim();
-    const title = document.getElementById('title-'+dayId).value.trim();
-    const memo = document.getElementById('memo-'+dayId).value.trim();
-    if(!title) return;
-    const d = days.find(x=>x.id===dayId); if(!d) return;
-    const item = { id: uid(), time, title, memo, author: myNick, updatedBy: myNick, createdAt: Date.now(), updatedAt: Date.now() };
-    d.items = d.items || [];
-    d.items.push(item);
-    if(firebaseReady){ col('days').doc(dayId).set(d); }
-    else { persistLocalAll(); renderDays(); }
-    addLogLocalAware('add', `"${title}" 일정을 추가했어요`);
-    ['time-','title-','memo-'].forEach(p=>document.getElementById(p+dayId).value='');
-  }
-  function deleteItem(dayId, itemId){
-    const d = days.find(x=>x.id===dayId); if(!d) return;
-    const it = (d.items||[]).find(x=>x.id===itemId);
-    d.items = (d.items||[]).filter(x=>x.id!==itemId);
-    if(firebaseReady){ col('days').doc(dayId).set(d); }
-    else { persistLocalAll(); renderDays(); }
-    addLogLocalAware('delete', `"${it?it.title:''}" 일정을 삭제했어요`);
-  }
-
-  function addWish(){
-    const input = document.getElementById('wishInput');
-    const content = input.value.trim();
-    if(!content) return;
-    const w = { id: uid(), content, author: myNick, ts: Date.now() };
-    wishes.push(w);
-    if(firebaseReady){ col('wishes').doc(w.id).set(w); }
-    else { persistLocalAll(); renderWishes(); }
-    addLogLocalAware('add', `위시리스트에 "${content.slice(0,20)}"${content.length>20?'…':''}를 추가했어요`);
-    input.value='';
-  }
-  function deleteWish(id){
-    const w = wishes.find(x=>x.id===id);
-    wishes = wishes.filter(x=>x.id!==id);
-    if(firebaseReady){ col('wishes').doc(id).delete(); }
-    else { persistLocalAll(); renderWishes(); }
-    addLogLocalAware('delete', `위시리스트에서 "${w?w.content.slice(0,20):''}"를 삭제했어요`);
-  }
-
-  function addLogLocalAware(action, detail){
-    if(firebaseReady){ addLog(action, detail); return; }
-    logs.push({ id: uid(), nickname: myNick, action, detail, ts: Date.now() });
-    persistLocalAll(); renderLogs();
-  }
-
-  /* ===================== 초기 로드 / 실시간 구독 ===================== */
-  function boot(){
-    if(firebaseReady){
-      col('days').onSnapshot(snap=>{
-        days = snap.docs.map(d=>d.data()).sort((a,b)=>(a._order||0)-(b._order||0));
-        renderDays();
-      });
-      col('wishes').onSnapshot(snap=>{
-        wishes = snap.docs.map(d=>d.data());
-        renderWishes();
-      });
-      col('logs').onSnapshot(snap=>{
-        logs = snap.docs.map(d=>d.data());
-        renderLogs();
-      });
-      col('members').onSnapshot(snap=>{
-        members = snap.docs.map(d=>d.data().nickname);
-        renderMembers();
-      });
+  function toggleCheck(id) {
+    const it = store.data.checklist.find(i => i.id === id);
+    if (!it) return;
+    it.checked = !it.checked;
+    if (it.checked) {
+      it.checkedBy = store.me.name;
+      it.checkedAt = now();
+      store.log('check', 'checklist', it.title);
     } else {
-      days = localGet('days', []);
-      wishes = localGet('wishes', []);
-      logs = localGet('logs', []);
-      members = myNick ? [myNick] : [];
-      renderDays(); renderWishes(); renderLogs(); renderMembers();
+      it.checkedBy = '';
+      it.checkedAt = 0;
+      store.log('uncheck', 'checklist', it.title);
+    }
+    store.save();
+  }
+
+  // ------------------------------------------------
+  // 9. 예산 · 비용 분담
+  // ------------------------------------------------
+  const BUDGET_CATS = ['숙소', '교통', '식비', '입장료', '쇼핑', '기타'];
+  const BUDGET_CAT_COLORS = {
+    '숙소': '#38BDF8', '교통': '#8B5CF6', '식비': '#FF7A6B',
+    '입장료': '#10B981', '쇼핑': '#EC4899', '기타': '#64748B'
+  };
+
+  function renderBudget() {
+    const container = $('#screen-budget .list-body');
+    const items = store.data.budget;
+    const total = items.reduce((s, b) => s + (Number(b.amount) || 0), 0);
+    const perPerson = TRIP.members.length ? Math.round(total / TRIP.members.length) : 0;
+
+    let html = `
+      <div class="budget-summary">
+        <div class="budget-total">총 예상 비용</div>
+        <div class="budget-amount">${total.toLocaleString()}원</div>
+        <div class="budget-split">
+          <div class="budget-split-item">
+            <div class="label">1인당</div>
+            <div class="amount">${perPerson.toLocaleString()}원</div>
+          </div>
+          <div class="budget-split-item">
+            <div class="label">항목</div>
+            <div class="amount">${items.length}건</div>
+          </div>
+          <div class="budget-split-item">
+            <div class="label">인원</div>
+            <div class="amount">${TRIP.members.length}명</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    if (!items.length) {
+      html += emptyState('아직 예산 항목이 없어요', '예상 비용을 미리 담아봐요');
+    } else {
+      html += `<div class="list">`;
+      items.forEach(it => {
+        const c = BUDGET_CAT_COLORS[it.category] || '#64748B';
+        html += `
+          <div class="list-item budget-item">
+            <div class="item-header">
+              <div class="item-body">
+                <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+                  <div class="item-title">${escapeHtml(it.title)}</div>
+                  <div class="budget-cost">${(Number(it.amount) || 0).toLocaleString()}원</div>
+                </div>
+                <div style="margin-top:6px">
+                  <span class="budget-cat" style="background:${c}22;color:${c}">${escapeHtml(it.category || '기타')}</span>
+                </div>
+                <div class="item-foot">${metaLine(it)}</div>
+              </div>
+              ${itemActions('budget', it.id)}
+            </div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+    }
+    html += `<button class="add-btn mt-16" data-add="budget">+ 항목 추가</button>`;
+    container.innerHTML = html;
+  }
+
+  function openBudgetModal(existing) {
+    openModal({
+      title: existing ? '예산 수정' : '예산 항목 추가',
+      fields: [
+        { key: 'title', label: '항목명', type: 'text', placeholder: '예: 숙소 1박', required: true, value: existing?.title || '' },
+        { key: 'amount', label: '금액 (원)', type: 'number', placeholder: '0', required: true, value: existing?.amount || '' },
+        { key: 'category', label: '카테고리', type: 'select', options: BUDGET_CATS.map(c => ({ v: c, l: c })), value: existing?.category || '기타' }
+      ],
+      onSubmit: (vals) => {
+        if (existing) {
+          const it = store.data.budget.find(i => i.id === existing.id);
+          Object.assign(it, {
+            title: vals.title, amount: Number(vals.amount), category: vals.category,
+            editedBy: store.me.name, editedAt: now()
+          });
+          store.log('edit', 'budget', `${vals.title} (${Number(vals.amount).toLocaleString()}원)`);
+        } else {
+          store.data.budget.push({
+            id: uid(), title: vals.title, amount: Number(vals.amount), category: vals.category,
+            by: store.me.name, at: now()
+          });
+          store.log('add', 'budget', `${vals.title} (${Number(vals.amount).toLocaleString()}원)`);
+        }
+        store.save();
+        toast('저장했어요');
+      }
+    });
+  }
+
+  // ------------------------------------------------
+  // 10. 숙소 / 교통 (단일 텍스트 블록)
+  // ------------------------------------------------
+  function renderStay() { renderSingleInfo('stay', '숙소', $('#screen-stay .list-body')); }
+  function renderTransport() { renderSingleInfo('transport', '교통편', $('#screen-transport .list-body')); }
+
+  function renderSingleInfo(key, label, container) {
+    const info = store.data[key] || { content: '', by: '', at: 0 };
+    if (!info.content) {
+      container.innerHTML = emptyState(`${label} 정보를 기록해봐요`, '주소, 예약 링크, 체크인 시간 등') +
+        `<button class="add-btn mt-16" data-edit-info="${key}">+ ${label} 정보 작성</button>`;
+      return;
+    }
+    container.innerHTML = `
+      <div class="info-card">
+        <div class="info-label">${label} 정보</div>
+        <div class="info-value">${escapeHtml(info.content)}</div>
+        <div class="item-foot" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--hairline-soft)">
+          ${metaLine(info)}
+        </div>
+      </div>
+      <button class="add-btn" data-edit-info="${key}">수정하기</button>
+    `;
+  }
+
+  function openInfoModal(key) {
+    const label = key === 'stay' ? '숙소' : '교통편';
+    const current = store.data[key] || {};
+    openModal({
+      title: `${label} 정보 작성`,
+      fields: [
+        { key: 'content', label: `${label} 정보`, type: 'textarea', placeholder: '주소, 예약번호, 체크인 시간, 담당자 연락처 등 자유롭게',
+          value: current.content || '', rows: 8, required: true }
+      ],
+      onSubmit: (vals) => {
+        const before = store.data[key]?.content || '';
+        store.data[key] = {
+          content: vals.content,
+          by: store.data[key]?.by || store.me.name,
+          at: store.data[key]?.at || now(),
+          editedBy: before ? store.me.name : '',
+          editedAt: before ? now() : 0
+        };
+        store.log(before ? 'edit' : 'add', key, label);
+        store.save();
+        toast('저장했어요');
+      }
+    });
+  }
+
+  // ------------------------------------------------
+  // 11. 자유 게시판 (메모/댓글)
+  // ------------------------------------------------
+  function renderMemos() {
+    const container = $('#screen-memos .list-body');
+    const items = (store.data.memos || []).slice().sort((a, b) => b.at - a.at);
+    let html = `
+      <div class="info-card" style="background:var(--sky-soft);border-color:transparent">
+        <div style="font-size:13px;color:var(--sky-deep);font-weight:700;margin-bottom:8px">✏️ 새 메모 남기기</div>
+        <textarea id="memoInput" placeholder="자유롭게 남겨주세요"
+          style="width:100%;min-height:70px;padding:10px 12px;border-radius:10px;border:1px solid var(--hairline);background:white;font-size:14px;font-family:inherit;resize:vertical"></textarea>
+        <button class="btn btn-primary mt-8" id="memoPostBtn" style="width:100%">등록</button>
+      </div>
+    `;
+    if (!items.length) {
+      html += emptyState('아직 메모가 없어요', '아이디어나 공지사항을 자유롭게');
+    } else {
+      html += `<div style="margin-top:16px">`;
+      items.forEach(it => {
+        html += `
+          <div class="comment-item">
+            <div class="comment-header">
+              <div class="mini-avatar" style="background:${colorFor(it.name)}">${escapeHtml(initial(it.name))}</div>
+              <div class="comment-name">${escapeHtml(it.name)}</div>
+              <div class="comment-time">${fmtDateTime(it.at)}</div>
+              <button class="icon-btn" data-act="delete" data-section="memos" data-id="${it.id}" style="width:26px;height:26px" aria-label="삭제">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="14" height="14"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+              </button>
+            </div>
+            <div class="comment-body">${escapeHtml(it.body)}</div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+    }
+    container.innerHTML = html;
+
+    $('#memoPostBtn').addEventListener('click', () => {
+      const val = $('#memoInput').value.trim();
+      if (!val) { toast('메모를 입력해주세요'); return; }
+      store.data.memos.push({ id: uid(), name: store.me.name, body: val, at: now() });
+      store.log('comment', 'memos', val.slice(0, 30) + (val.length > 30 ? '…' : ''));
+      store.save();
+      toast('메모를 등록했어요');
+    });
+  }
+
+  // ------------------------------------------------
+  // 12. 활동 이력 (타임라인)
+  // ------------------------------------------------
+  const SECTION_LABEL = {
+    schedule: '일정', wishlist: '장소', foods: '음식', checklist: '준비물',
+    budget: '예산', stay: '숙소', transport: '교통편', memos: '메모'
+  };
+  const TYPE_LABEL = {
+    add: '추가', edit: '수정', remove: '삭제',
+    check: '완료', uncheck: '완료 해제', comment: '작성'
+  };
+
+  function renderActivity() {
+    const container = $('#screen-activity .list-body');
+    const items = (store.data.activity || []).slice();
+    if (!items.length) {
+      container.innerHTML = emptyState('아직 활동 이력이 없어요', '항목을 추가하면 여기에 기록돼요');
+      return;
+    }
+    let html = `<div class="timeline">`;
+    items.forEach(a => {
+      const cls = a.type === 'add' ? 'add' :
+        a.type === 'remove' ? 'remove' :
+        a.type === 'comment' ? 'comment' : 'edit';
+      const sec = SECTION_LABEL[a.section] || a.section;
+      const typ = TYPE_LABEL[a.type] || a.type;
+      html += `
+        <div class="tl-item ${cls}">
+          <div class="tl-time">${fmtDateTime(a.at)}</div>
+          <div class="tl-text">
+            <b style="color:${colorFor(a.by)}">${escapeHtml(a.by)}</b>님이
+            <span class="tag">${sec}</span>에
+            <b>${escapeHtml(a.title)}</b> ${typ}
+          </div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+    container.innerHTML = html;
+  }
+
+  // ------------------------------------------------
+  // 13. 설정
+  // ------------------------------------------------
+  function renderSettings() {
+    const container = $('#screen-settings .list-body');
+    const modeText = store.mode === 'firebase' ? '실시간 공유 (Firebase)' : '로컬 저장 (내 기기)';
+    container.innerHTML = `
+      <div class="settings-section">
+        <div class="settings-row tap" data-action="change-nick">
+          <div class="lbl">내 닉네임</div>
+          <div class="val">${escapeHtml(store.me.name)} ›</div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-row">
+          <div class="lbl">저장 모드</div>
+          <div class="val">${modeText}</div>
+        </div>
+        <div class="settings-row">
+          <div class="lbl">여행지</div>
+          <div class="val">${escapeHtml(TRIP.destination)}</div>
+        </div>
+        <div class="settings-row">
+          <div class="lbl">멤버</div>
+          <div class="val">${TRIP.members.join(', ')}</div>
+        </div>
+      </div>
+
+      ${store.mode === 'local' ? `
+        <div class="setup-note">
+          <b>실시간 공유를 원하시면</b><br>
+          <code>firebase-config.js</code> 파일에 Firebase 프로젝트 정보를 입력한 뒤 GitHub에 push해주세요.
+          자세한 방법은 <code>README.md</code>를 참고해주세요.
+        </div>
+      ` : ''}
+
+      <div class="settings-section">
+        <button class="settings-row tap" data-action="export" style="width:100%;text-align:left;background:none;border:none">
+          <div class="lbl">데이터 내보내기</div>
+          <div class="val">JSON ›</div>
+        </button>
+        <button class="settings-row tap" data-action="logout" style="width:100%;text-align:left;background:none;border:none">
+          <div class="lbl" style="color:var(--critical)">닉네임 재등록</div>
+          <div class="val">›</div>
+        </button>
+      </div>
+
+      <div style="text-align:center;font-size:11px;color:var(--stone);margin-top:24px;line-height:1.6">
+        Made with ☀️ for 민주 · 희주 · 나원<br>
+        경주에서 만나요
+      </div>
+    `;
+  }
+
+  // ------------------------------------------------
+  // 14. 모달 (동적 폼)
+  // ------------------------------------------------
+  function openModal({ title, fields, onSubmit, submitLabel }) {
+    const overlay = $('#modalOverlay');
+    const body = $('#modalBody');
+    const fieldsHtml = fields.map(f => {
+      if (f.type === 'select') {
+        return `
+          <div class="field">
+            <label>${escapeHtml(f.label)}</label>
+            <select data-k="${f.key}">
+              ${f.options.map(o => `<option value="${escapeHtml(o.v)}" ${String(o.v) === String(f.value) ? 'selected' : ''}>${escapeHtml(o.l)}</option>`).join('')}
+            </select>
+          </div>`;
+      }
+      if (f.type === 'textarea') {
+        return `
+          <div class="field">
+            <label>${escapeHtml(f.label)}</label>
+            <textarea data-k="${f.key}" ${f.rows ? `rows="${f.rows}"` : ''} placeholder="${escapeHtml(f.placeholder || '')}">${escapeHtml(f.value || '')}</textarea>
+          </div>`;
+      }
+      return `
+        <div class="field">
+          <label>${escapeHtml(f.label)}</label>
+          <input data-k="${f.key}" type="${f.type}" placeholder="${escapeHtml(f.placeholder || '')}" value="${escapeHtml(f.value || '')}" />
+        </div>`;
+    }).join('');
+
+    body.innerHTML = `
+      <div class="modal-handle"></div>
+      <div class="modal-title">${escapeHtml(title)}</div>
+      ${fieldsHtml}
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="modalCancel">취소</button>
+        <button class="btn btn-primary" id="modalSubmit">${escapeHtml(submitLabel || '저장')}</button>
+      </div>
+    `;
+
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    $('#modalCancel').addEventListener('click', closeModal);
+    $('#modalSubmit').addEventListener('click', () => {
+      const vals = {};
+      let hasError = false;
+      fields.forEach(f => {
+        const el = body.querySelector(`[data-k="${f.key}"]`);
+        vals[f.key] = el ? el.value.trim() : '';
+        if (f.required && !vals[f.key]) {
+          el.style.borderColor = 'var(--critical)';
+          hasError = true;
+        }
+      });
+      if (hasError) { toast('필수 항목을 입력해주세요'); return; }
+      onSubmit(vals);
+      closeModal();
+    });
+  }
+
+  function closeModal() {
+    $('#modalOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // ------------------------------------------------
+  // 15. 이벤트 위임
+  // ------------------------------------------------
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-tab]');
+    if (t) {
+      navigate(t.dataset.tab);
+      return;
+    }
+
+    const back = e.target.closest('#headerBack');
+    if (back) { navigate('home'); return; }
+
+    const menu = e.target.closest('.menu-card[data-route]');
+    if (menu) { navigate(menu.dataset.route); return; }
+
+    const add = e.target.closest('[data-add]');
+    if (add) {
+      const s = add.dataset.add;
+      if (s === 'schedule') openScheduleModal();
+      else if (s === 'wishlist') openWishlistModal();
+      else if (s === 'foods') openFoodsModal();
+      else if (s === 'checklist') openChecklistModal();
+      else if (s === 'budget') openBudgetModal();
+      return;
+    }
+
+    const editInfo = e.target.closest('[data-edit-info]');
+    if (editInfo) { openInfoModal(editInfo.dataset.editInfo); return; }
+
+    const check = e.target.closest('[data-check]');
+    if (check) { toggleCheck(check.dataset.check); return; }
+
+    const map = e.target.closest('[data-map]');
+    if (map) {
+      const q = encodeURIComponent(map.dataset.map + ' 경주');
+      window.open(`https://map.naver.com/p/search/${q}`, '_blank', 'noopener');
+      return;
+    }
+
+    const act = e.target.closest('[data-act]');
+    if (act) {
+      const { act: type, section, id } = act.dataset;
+      handleItemAction(type, section, id);
+      return;
+    }
+
+    const settingsAction = e.target.closest('[data-action]');
+    if (settingsAction) {
+      handleSettingsAction(settingsAction.dataset.action);
+      return;
+    }
+
+    // modal backdrop click to close
+    if (e.target.id === 'modalOverlay') closeModal();
+  });
+
+  function handleItemAction(type, section, id) {
+    if (type === 'edit') {
+      const item = (store.data[section] || []).find(i => i.id === id);
+      if (!item) return;
+      if (section === 'schedule') openScheduleModal(item);
+      else if (section === 'wishlist') openWishlistModal(item);
+      else if (section === 'foods') openFoodsModal(item);
+      else if (section === 'checklist') openChecklistModal(item);
+      else if (section === 'budget') openBudgetModal(item);
+    } else if (type === 'delete') {
+      const arr = store.data[section];
+      if (!arr) return;
+      const idx = arr.findIndex(i => i.id === id);
+      if (idx < 0) return;
+      const item = arr[idx];
+      if (!confirm(`"${item.title || item.body || '항목'}"을(를) 삭제할까요?`)) return;
+      arr.splice(idx, 1);
+      store.log('remove', section, item.title || (item.body ? item.body.slice(0, 20) : '항목'));
+      store.save();
+      toast('삭제했어요');
     }
   }
-  if(myNick) boot();
-</script>
+
+  function handleSettingsAction(action) {
+    if (action === 'change-nick') {
+      showOnboarding(true);
+    } else if (action === 'logout') {
+      if (!confirm('닉네임을 다시 등록하시겠어요?')) return;
+      localStorage.removeItem(LS_ME);
+      store.me = null;
+      renderRoute();
+    } else if (action === 'export') {
+      const blob = new Blob([JSON.stringify(store.data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `gyeongju-trip-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast('내보냈어요');
+    }
+  }
+
+  // ------------------------------------------------
+  // 16. 온보딩 (닉네임 등록)
+  // ------------------------------------------------
+  function showOnboarding(isChange = false) {
+    const wrap = $('#onboarding');
+    const shell = $('#appShell');
+    wrap.classList.remove('hidden');
+    shell.classList.add('hidden');
+
+    const chipsHtml = TRIP.members.map(n => `
+      <button class="nick-chip" data-nick="${escapeHtml(n)}">${escapeHtml(n)}</button>
+    `).join('');
+
+    wrap.innerHTML = `
+      <div class="onboard-wrap">
+        <div class="onboard-card">
+          <div class="onboard-illust">🌴</div>
+          <div class="onboard-title">${isChange ? '닉네임 변경' : '누구세요?'}</div>
+          <div class="onboard-sub">
+            경주 여행 계획에 함께해요.<br>
+            닉네임으로 수정 이력이 표시돼요.
+          </div>
+          <div class="nickname-suggests">
+            ${chipsHtml}
+          </div>
+          <div class="field">
+            <input id="nickInput" type="text" placeholder="직접 입력" value="${isChange && store.me ? escapeHtml(store.me.name) : ''}" maxlength="10" />
+          </div>
+          <button class="btn btn-primary btn-block" id="nickSubmit">시작하기</button>
+          <div style="margin-top:16px;font-size:11px;color:var(--stone)">
+            저장 모드: ${store.mode === 'firebase' ? '🟢 실시간 공유' : '🟡 로컬 저장'}
+          </div>
+        </div>
+      </div>
+    `;
+
+    $$('.nick-chip', wrap).forEach(chip => {
+      chip.addEventListener('click', () => {
+        $$('.nick-chip', wrap).forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        $('#nickInput').value = chip.dataset.nick;
+      });
+    });
+
+    $('#nickSubmit').addEventListener('click', () => {
+      const name = $('#nickInput').value.trim();
+      if (!name) { toast('닉네임을 입력해주세요'); return; }
+      if (name.length > 10) { toast('10자 이내로 입력해주세요'); return; }
+      store.setMe(name);
+      if (isChange) {
+        // 로그 남기기
+      }
+      navigate('home');
+      renderRoute();
+      toast(`${name}님 반가워요!`);
+    });
+
+    $('#nickInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') $('#nickSubmit').click();
+    });
+  }
+
+  // ------------------------------------------------
+  // 17. 초기화
+  // ------------------------------------------------
+  window.addEventListener('hashchange', renderRoute);
+
+  store.onChange(() => {
+    // 데이터 변경 시 현재 화면 다시 그리기
+    renderRoute();
+  });
+
+  store.init().then(() => {
+    if (!store.me) {
+      showOnboarding();
+    } else {
+      renderRoute();
+      // 홈이 아니어도 상관없이 그리기
+    }
+    // D-day 매초 재계산은 불필요, 렌더 시에만
+    fetchWeather();
+  });
+
+})();
+
+  </script>
 </body>
 </html>
