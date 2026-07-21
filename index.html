@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#F6EFE2">
+<title>여름휴가 계획 — Trip Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+  :root{
+    --sand:#F6EFE2;
+    --sand-2:#EFE5D2;
+    --teal:#0F5C66;
+    --teal-dark:#0B434B;
+    --ink:#1C2B2D;
+    --coral:#FF6F4D;
+    --sun:#FFB84C;
+    --mist:#D7E8E4;
+    --white:#FFFDF8;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    background:var(--sand);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(15,92,102,0.06) 1px, transparent 0);
+    background-size:22px 22px;
+    color:var(--ink);
+    font-family:'Pretendard', -apple-system, sans-serif;
+    min-height:100vh;
+    padding-top:env(safe-area-inset-top);
+    padding-bottom:calc(72px + env(safe-area-inset-bottom));
+    padding-left:env(safe-area-inset-left);
+    padding-right:env(safe-area-inset-right);
+    overscroll-behavior-y:none;
+  }
+  input, textarea{ font-size:16px; } /* iOS 자동 확대(zoom) 방지 */
+  h1,h2,h3,.serif{ font-family:'Fraunces', serif; }
+  ::-webkit-scrollbar{ height:6px; width:6px; }
+  ::-webkit-scrollbar-thumb{ background:var(--mist); border-radius:4px; }
+
+  /* ---------- Nickname modal ---------- */
+  #nickModal{
+    position:fixed; inset:0; background:rgba(28,43,45,0.55);
+    display:flex; align-items:center; justify-content:center; z-index:100;
+    padding:20px;
+  }
+  #nickModal.hidden{ display:none; }
+  .nickCard{
+    background:var(--white); border-radius:18px; padding:32px 28px;
+    width:100%; max-width:360px; text-align:center;
+    box-shadow:0 20px 40px rgba(28,43,45,0.25);
+    border:1px solid var(--mist);
+  }
+  .nickCard .stamp{
+    width:64px; height:64px; border-radius:50%; border:2px dashed var(--coral);
+    display:flex; align-items:center; justify-content:center; margin:0 auto 16px;
+    color:var(--coral); font-family:'Fraunces',serif; font-weight:700; font-size:22px;
+    transform:rotate(-8deg);
+  }
+  .nickCard h2{ margin:0 0 6px; font-size:22px; }
+  .nickCard p{ margin:0 0 18px; color:#5c6b6a; font-size:14px; line-height:1.6; }
+  .nickCard input{
+    width:100%; padding:12px 14px; min-height:44px; border-radius:10px; border:1.5px solid var(--mist);
+    font-size:16px; font-family:'Pretendard',sans-serif; margin-bottom:12px; background:var(--sand);
+  }
+  .nickCard input:focus{ outline:none; border-color:var(--teal); }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    padding:11px 18px; min-height:44px; border-radius:10px; border:none; cursor:pointer;
+    font-family:'Pretendard',sans-serif; font-weight:600; font-size:15px;
+    transition:transform .12s ease;
+  }
+  .btn:active{ transform:scale(0.97); }
+  .btn-primary{ background:var(--teal); color:#fff; width:100%; }
+  .btn-primary:hover{ background:var(--teal-dark); }
+  .btn-coral{ background:var(--coral); color:#fff; }
+  .btn-ghost{ background:transparent; border:1.5px solid var(--mist); color:var(--ink); }
+
+  /* ---------- Header ---------- */
+  header.cover{
+    max-width:760px; margin:0 auto; padding:40px 20px 20px;
+    text-align:center;
+  }
+  header.cover .eyebrow{
+    font-size:12px; letter-spacing:.14em; color:var(--teal); font-weight:600;
+    text-transform:uppercase; margin-bottom:6px;
+  }
+  header.cover h1{ font-size:34px; margin:0 0 8px; color:var(--teal-dark); }
+  header.cover .sub{ color:#5c6b6a; font-size:14px; margin-bottom:18px; }
+  .who{
+    display:flex; justify-content:center; align-items:center; gap:8px;
+    font-size:13px; color:var(--ink);
+  }
+  .who .badge{
+    font-family:'Caveat',cursive; font-size:20px; color:var(--coral); font-weight:700;
+  }
+  .members{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-top:10px; }
+  .member-chip{
+    background:var(--mist); color:var(--teal-dark); font-size:12px; padding:4px 10px;
+    border-radius:20px; font-weight:600;
+  }
+
+  /* ---------- Bottom nav (iOS thumb-friendly) ---------- */
+  .bottom-nav{
+    position:fixed; left:0; right:0; bottom:0; z-index:50;
+    display:flex; background:rgba(255,253,248,0.92);
+    -webkit-backdrop-filter:saturate(180%) blur(14px);
+    backdrop-filter:saturate(180%) blur(14px);
+    border-top:1px solid var(--mist);
+    padding:6px 6px calc(6px + env(safe-area-inset-bottom));
+  }
+  .nav-item{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:3px; padding:6px 4px; border-radius:12px; cursor:pointer; color:#9aa5a3;
+    min-height:48px; user-select:none;
+  }
+  .nav-item i{ font-size:22px; line-height:1; }
+  .nav-item span{ font-size:11px; font-weight:600; }
+  .nav-item.active{ color:var(--teal-dark); background:var(--mist); }
+  .nav-item:active{ transform:scale(0.95); }
+
+  main{ max-width:760px; margin:16px auto 0; padding:18px; background:var(--white);
+    border-radius:16px; border:1px solid var(--mist); min-height:400px; }
+  .panel{ display:none; }
+  .panel.active{ display:block; }
+
+  /* ---------- Itinerary ---------- */
+  .day-block{ margin-bottom:28px; }
+  .day-head{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .day-stamp{
+    width:52px; height:52px; border-radius:50%; border:2px dashed var(--teal);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:var(--teal-dark); flex-shrink:0; transform:rotate(-5deg);
+  }
+  .day-stamp small{ font-size:8px; letter-spacing:.05em; }
+  .day-stamp b{ font-family:'Fraunces',serif; font-size:16px; line-height:1; }
+  .day-title-input{
+    font-family:'Fraunces',serif; font-size:18px; border:none; background:transparent;
+    color:var(--teal-dark); flex:1; padding:4px 0; border-bottom:1px dashed transparent;
+  }
+  .day-title-input:focus{ outline:none; border-bottom-color:var(--mist); }
+  .day-del{ background:none; border:none; color:#b9b2a5; cursor:pointer; font-size:16px; }
+
+  .item-row{
+    display:flex; gap:10px; align-items:flex-start; padding:10px 12px;
+    border-radius:10px; background:var(--sand); margin-bottom:8px;
+  }
+  .item-time{ font-family:'Fraunces',serif; font-size:13px; color:var(--coral); font-weight:600;
+    min-width:48px; padding-top:2px; }
+  .item-body{ flex:1; }
+  .item-title{ font-size:14.5px; font-weight:600; margin:0; }
+  .item-memo{ font-size:13px; color:#5c6b6a; margin:2px 0 0; }
+  .item-meta{ font-size:11px; color:#9aa5a3; margin-top:4px; }
+  .item-actions{ display:flex; gap:4px; }
+  .icon-btn{ background:none; border:none; color:#9aa5a3; cursor:pointer; font-size:15px;
+    min-width:32px; min-height:32px; display:flex; align-items:center; justify-content:center; }
+  .icon-btn:hover{ color:var(--coral); }
+  .day-del{ min-width:32px; min-height:32px; display:flex; align-items:center; justify-content:center; }
+
+  .add-item-row{ display:flex; gap:8px; margin-top:6px; flex-wrap:wrap; }
+  .add-item-row input{
+    padding:10px; min-height:40px; border-radius:8px; border:1px solid var(--mist); font-size:16px;
+    font-family:'Pretendard',sans-serif; background:var(--white);
+  }
+  .add-item-row input[name=time]{ width:80px; }
+  .add-item-row input[name=title]{ flex:1; min-width:120px; }
+  .add-item-row input[name=memo]{ width:100%; margin-top:6px; }
+
+  .add-day-btn{
+    width:100%; padding:12px; border-radius:10px; border:1.5px dashed var(--mist);
+    background:none; color:var(--teal); font-weight:600; cursor:pointer; font-size:14px;
+  }
+
+  /* ---------- Wishlist (postcards) ---------- */
+  .wish-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:16px;
+    margin-bottom:18px;
+  }
+  .postcard{
+    background:var(--sand); border:1px solid var(--mist); border-radius:4px;
+    padding:16px 14px 12px; position:relative; min-height:120px;
+  }
+  .postcard::before{
+    content:''; position:absolute; top:-8px; left:16px; width:34px; height:14px;
+    background:rgba(255,184,76,.55); transform:rotate(-4deg);
+  }
+  .postcard .content{ font-size:14px; line-height:1.5; margin:6px 0 14px; }
+  .postcard .foot{ display:flex; justify-content:space-between; align-items:center; }
+  .postcard .author{ font-family:'Caveat',cursive; font-size:18px; color:var(--teal-dark); font-weight:700; }
+  .postcard .date{ font-size:10px; color:#9aa5a3; }
+  .postcard .del{ position:absolute; top:6px; right:8px; }
+
+  .add-wish{
+    display:flex; gap:8px; flex-wrap:wrap;
+  }
+  .add-wish textarea{
+    flex:1; min-width:160px; padding:10px; border-radius:8px; border:1px solid var(--mist);
+    font-family:'Pretendard',sans-serif; font-size:16px; resize:vertical; min-height:44px;
+  }
+
+  /* ---------- Activity log ---------- */
+  .log-item{
+    display:flex; gap:10px; padding:9px 0; border-bottom:1px solid var(--sand-2); font-size:13px;
+  }
+  .log-item .dot{ width:6px; height:6px; border-radius:50%; background:var(--coral); margin-top:6px; flex-shrink:0; }
+  .log-item b{ color:var(--teal-dark); }
+  .log-item .t{ font-size:11px; color:#9aa5a3; display:block; margin-top:2px; }
+  .empty{ text-align:center; color:#9aa5a3; font-size:13px; padding:30px 0; }
+
+  .setup-warn{
+    max-width:760px; margin:16px auto 0; padding:12px 16px; background:#FFF4E8;
+    border:1px solid var(--sun); border-radius:10px; font-size:12.5px; color:#7a5a1f; line-height:1.6;
+  }
+  .setup-warn code{ background:#fff; padding:1px 5px; border-radius:4px; }
+
+  @media (max-width:480px){
+    header.cover{ padding:24px 16px 12px; }
+    header.cover h1{ font-size:24px; }
+    header.cover .sub{ font-size:13px; margin-bottom:12px; }
+    main{ padding:14px; margin:12px 10px 0; border-radius:16px; }
+    .wish-grid{ grid-template-columns:repeat(2, 1fr); gap:10px; }
+    .postcard{ padding:14px 12px 10px; min-height:100px; }
+    .day-stamp{ width:44px; height:44px; }
+    .day-stamp b{ font-size:14px; }
+    .day-title-input{ font-size:16px; }
+    .add-item-row input[name=time]{ width:64px; }
+    .item-row{ padding:9px 10px; }
+    .bottom-nav{ padding-left:2px; padding-right:2px; }
+  }
+
+  @media (max-width:380px){
+    header.cover h1{ font-size:21px; }
+    .wish-grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div id="nickModal">
+  <div class="nickCard">
+    <div class="stamp">HI</div>
+    <h2>누구신가요?</h2>
+    <p>닉네임을 등록하면 이 기기에서 계속 같은 이름으로 기록돼요.<br>수정 이력에 이름이 남습니다.</p>
+    <input id="nickInput" placeholder="닉네임 (예: 민수)" maxlength="10">
+    <button class="btn btn-primary" onclick="registerNickname()">시작하기</button>
+  </div>
+</div>
+
+<header class="cover">
+  <div class="eyebrow">Summer Trip · 3 People</div>
+  <h1>우리 셋의 여름휴가</h1>
+  <div class="sub">일정도, 하고 싶은 것도 여기서 같이 채워요</div>
+  <div class="who">지금 접속: <span class="badge" id="myNickTag">-</span></div>
+  <div class="members" id="memberChips"></div>
+</header>
+
+<div class="setup-warn" id="setupWarn">
+  ⚠ 아직 Firebase 연결이 설정되지 않았어요. 아래 <code>firebaseConfig</code> 부분을 본인 Firebase 프로젝트 값으로 바꿔야 세 명이 실제로 데이터를 공유할 수 있어요. (하단 안내 참고)
+</div>
+
+<main>
+  <div class="panel active" id="panel-itinerary">
+    <div id="dayList"></div>
+    <button class="add-day-btn" onclick="addDay()">+ 날짜 추가</button>
+  </div>
+
+  <div class="panel" id="panel-wishlist">
+    <div class="add-wish" style="margin-bottom:18px;">
+      <textarea id="wishInput" placeholder="예: 노을 보면서 맥주 마시기"></textarea>
+      <button class="btn btn-coral" onclick="addWish()">추가</button>
+    </div>
+    <div class="wish-grid" id="wishGrid"></div>
+  </div>
+
+  <div class="panel" id="panel-log">
+    <div id="logList"></div>
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <div class="nav-item active" data-tab="itinerary"><i class="ti ti-map-pin"></i><span>여행 계획</span></div>
+  <div class="nav-item" data-tab="wishlist"><i class="ti ti-heart"></i><span>하고 싶은 거</span></div>
+  <div class="nav-item" data-tab="log"><i class="ti ti-history"></i><span>수정 이력</span></div>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* =====================================================================
+   1. Firebase 설정 — 반드시 본인 프로젝트 값으로 교체하세요.
+   Firebase 콘솔(console.firebase.google.com) > 프로젝트 생성 > 웹 앱 추가
+   > Firestore Database 만들기(테스트 모드) 후 아래 config 값을 복붙하세요.
+   ===================================================================== */
+  const firebaseConfig = {
+    apiKey: "AIzaSyDiXErVtYYHQzj9DCSCkRGMBl4aQaUYJEg",
+    authDomain: "najjangim-summer.firebaseapp.com",
+    projectId: "najjangim-summer",
+    storageBucket: "najjangim-summer.firebasestorage.app",
+    messagingSenderId: "1007905433450",
+    appId: "1:1007905433450:web:879984c02ef5d9fa846713"
+  };
+
+  const TRIP_ID = "summer-trip-3"; // 여러 여행에 재사용하고 싶으면 이 값을 바꾸세요
+
+  let db = null;
+  let firebaseReady = false;
+  try{
+    if(firebaseConfig.apiKey !== "YOUR_API_KEY"){
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      firebaseReady = true;
+      document.getElementById('setupWarn').style.display = 'none';
+    }
+  }catch(e){ console.error(e); }
+
+  const col = (name) => db.collection('trips').doc(TRIP_ID).collection(name);
+
+  /* ===================== 닉네임 ===================== */
+  let myNick = localStorage.getItem('tripNickname');
+  function registerNickname(){
+    const v = document.getElementById('nickInput').value.trim();
+    if(!v){ return; }
+    myNick = v;
+    localStorage.setItem('tripNickname', v);
+    document.getElementById('nickModal').classList.add('hidden');
+    document.getElementById('myNickTag').textContent = v;
+    if(firebaseReady){
+      col('members').doc(v).set({ nickname:v, lastSeen: Date.now() }, {merge:true});
+    }
+    boot();
+  }
+  if(myNick){
+    document.getElementById('nickModal').classList.add('hidden');
+    document.getElementById('myNickTag').textContent = myNick;
+  }
+
+  /* ===================== 탭 전환 ===================== */
+  document.querySelectorAll('.nav-item').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById('panel-'+t.dataset.tab).classList.add('active');
+      window.scrollTo({top:0, behavior:'instant'});
+    });
+  });
+
+  /* ===================== 유틸 ===================== */
+  function fmtTime(ts){
+    const d = new Date(ts);
+    return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  }
+  function uid(){ return Math.random().toString(36).slice(2,10); }
+
+  async function addLog(action, detail){
+    if(!firebaseReady) return;
+    await col('logs').add({
+      nickname: myNick, action, detail, ts: Date.now()
+    });
+  }
+
+  /* ===================== 로컬 폴백 저장(Firebase 미설정 시) ===================== */
+  function localGet(key, def){ try{ return JSON.parse(localStorage.getItem(key)) || def; }catch(e){ return def; } }
+  function localSet(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+
+  let days = [];      // {id, title, items:[{id,time,title,memo,author,updatedBy,updatedAt}]}
+  let wishes = [];     // {id, content, author, ts}
+  let logs = [];        // {id, nickname, action, detail, ts}
+  let members = [];
+
+  /* ===================== 렌더링 ===================== */
+  function renderMembers(){
+    const wrap = document.getElementById('memberChips');
+    wrap.innerHTML = members.map(m=>`<span class="member-chip">${escapeHtml(m)}</span>`).join('');
+  }
+
+  function renderDays(){
+    const wrap = document.getElementById('dayList');
+    if(days.length===0){ wrap.innerHTML = '<div class="empty">아직 등록된 날짜가 없어요. 아래 버튼으로 첫 날을 추가해보세요.</div>'; return; }
+    wrap.innerHTML = days.map((day, di)=>`
+      <div class="day-block">
+        <div class="day-head">
+          <div class="day-stamp"><small>DAY</small><b>${di+1}</b></div>
+          <input class="day-title-input" value="${escapeAttr(day.title||'')}" placeholder="예: 7/28 첫째날 · 강릉"
+            onchange="renameDay('${day.id}', this.value)">
+          <button class="day-del" onclick="deleteDay('${day.id}')" title="날짜 삭제">✕</button>
+        </div>
+        <div>
+          ${(day.items||[]).map(it=>`
+            <div class="item-row">
+              <div class="item-time">${escapeHtml(it.time||'')}</div>
+              <div class="item-body">
+                <p class="item-title">${escapeHtml(it.title)}</p>
+                ${it.memo ? `<p class="item-memo">${escapeHtml(it.memo)}</p>` : ''}
+                <div class="item-meta">최근 수정: ${escapeHtml(it.updatedBy||it.author)} · ${fmtTime(it.updatedAt||it.createdAt)}</div>
+              </div>
+              <div class="item-actions">
+                <button class="icon-btn" onclick="deleteItem('${day.id}','${it.id}')" title="삭제">✕</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="add-item-row">
+          <input type="text" placeholder="시간" name="time" style="width:70px" id="time-${day.id}">
+          <input type="text" placeholder="할 일 / 장소" name="title" id="title-${day.id}">
+          <input type="text" placeholder="메모(선택)" name="memo" id="memo-${day.id}">
+          <button class="btn btn-ghost" onclick="addItem('${day.id}')">+ 추가</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderWishes(){
+    const wrap = document.getElementById('wishGrid');
+    if(wishes.length===0){ wrap.innerHTML = '<div class="empty" style="grid-column:1/-1">아직 아무도 하고 싶은 걸 안 적었어요.</div>'; return; }
+    wrap.innerHTML = wishes.slice().reverse().map(w=>`
+      <div class="postcard">
+        <button class="icon-btn del" onclick="deleteWish('${w.id}')">✕</button>
+        <div class="content">${escapeHtml(w.content)}</div>
+        <div class="foot">
+          <span class="author">${escapeHtml(w.author)}</span>
+          <span class="date">${fmtTime(w.ts)}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderLogs(){
+    const wrap = document.getElementById('logList');
+    if(logs.length===0){ wrap.innerHTML = '<div class="empty">아직 활동 기록이 없어요.</div>'; return; }
+    wrap.innerHTML = logs.slice().sort((a,b)=>b.ts-a.ts).map(l=>`
+      <div class="log-item">
+        <div class="dot"></div>
+        <div>
+          <span><b>${escapeHtml(l.nickname)}</b>님이 ${escapeHtml(l.detail)}</span>
+          <span class="t">${fmtTime(l.ts)}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function escapeHtml(s){ const d=document.createElement('div'); d.innerText = s==null?'':String(s); return d.innerHTML; }
+  function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
+
+  /* ===================== CRUD ===================== */
+  function persistLocalAll(){
+    localSet('days', days); localSet('wishes', wishes); localSet('logs', logs); localSet('members', members);
+  }
+
+  function addDay(){
+    const d = { id: uid(), title:'', items:[] };
+    days.push(d);
+    if(firebaseReady){ col('days').doc(d.id).set(d); }
+    else { persistLocalAll(); renderDays(); }
+    addLogLocalAware('add', '새 날짜를 추가했어요');
+  }
+  function renameDay(id, title){
+    const d = days.find(x=>x.id===id); if(!d) return; d.title = title;
+    if(firebaseReady){ col('days').doc(id).update({title}); }
+    else { persistLocalAll(); }
+    addLogLocalAware('edit', `날짜 이름을 "${title}"(으)로 수정했어요`);
+  }
+  function deleteDay(id){
+    if(!confirm('이 날짜와 모든 일정을 삭제할까요?')) return;
+    days = days.filter(x=>x.id!==id);
+    if(firebaseReady){ col('days').doc(id).delete(); }
+    else { persistLocalAll(); renderDays(); }
+    addLogLocalAware('delete', '날짜를 삭제했어요');
+  }
+  function addItem(dayId){
+    const time = document.getElementById('time-'+dayId).value.trim();
+    const title = document.getElementById('title-'+dayId).value.trim();
+    const memo = document.getElementById('memo-'+dayId).value.trim();
+    if(!title) return;
+    const d = days.find(x=>x.id===dayId); if(!d) return;
+    const item = { id: uid(), time, title, memo, author: myNick, updatedBy: myNick, createdAt: Date.now(), updatedAt: Date.now() };
+    d.items = d.items || [];
+    d.items.push(item);
+    if(firebaseReady){ col('days').doc(dayId).set(d); }
+    else { persistLocalAll(); renderDays(); }
+    addLogLocalAware('add', `"${title}" 일정을 추가했어요`);
+    ['time-','title-','memo-'].forEach(p=>document.getElementById(p+dayId).value='');
+  }
+  function deleteItem(dayId, itemId){
+    const d = days.find(x=>x.id===dayId); if(!d) return;
+    const it = (d.items||[]).find(x=>x.id===itemId);
+    d.items = (d.items||[]).filter(x=>x.id!==itemId);
+    if(firebaseReady){ col('days').doc(dayId).set(d); }
+    else { persistLocalAll(); renderDays(); }
+    addLogLocalAware('delete', `"${it?it.title:''}" 일정을 삭제했어요`);
+  }
+
+  function addWish(){
+    const input = document.getElementById('wishInput');
+    const content = input.value.trim();
+    if(!content) return;
+    const w = { id: uid(), content, author: myNick, ts: Date.now() };
+    wishes.push(w);
+    if(firebaseReady){ col('wishes').doc(w.id).set(w); }
+    else { persistLocalAll(); renderWishes(); }
+    addLogLocalAware('add', `위시리스트에 "${content.slice(0,20)}"${content.length>20?'…':''}를 추가했어요`);
+    input.value='';
+  }
+  function deleteWish(id){
+    const w = wishes.find(x=>x.id===id);
+    wishes = wishes.filter(x=>x.id!==id);
+    if(firebaseReady){ col('wishes').doc(id).delete(); }
+    else { persistLocalAll(); renderWishes(); }
+    addLogLocalAware('delete', `위시리스트에서 "${w?w.content.slice(0,20):''}"를 삭제했어요`);
+  }
+
+  function addLogLocalAware(action, detail){
+    if(firebaseReady){ addLog(action, detail); return; }
+    logs.push({ id: uid(), nickname: myNick, action, detail, ts: Date.now() });
+    persistLocalAll(); renderLogs();
+  }
+
+  /* ===================== 초기 로드 / 실시간 구독 ===================== */
+  function boot(){
+    if(firebaseReady){
+      col('days').onSnapshot(snap=>{
+        days = snap.docs.map(d=>d.data()).sort((a,b)=>(a._order||0)-(b._order||0));
+        renderDays();
+      });
+      col('wishes').onSnapshot(snap=>{
+        wishes = snap.docs.map(d=>d.data());
+        renderWishes();
+      });
+      col('logs').onSnapshot(snap=>{
+        logs = snap.docs.map(d=>d.data());
+        renderLogs();
+      });
+      col('members').onSnapshot(snap=>{
+        members = snap.docs.map(d=>d.data().nickname);
+        renderMembers();
+      });
+    } else {
+      days = localGet('days', []);
+      wishes = localGet('wishes', []);
+      logs = localGet('logs', []);
+      members = myNick ? [myNick] : [];
+      renderDays(); renderWishes(); renderLogs(); renderMembers();
+    }
+  }
+  if(myNick) boot();
+</script>
+</body>
+</html>
