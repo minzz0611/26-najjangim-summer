@@ -1638,11 +1638,13 @@ window.TRIP_INFO = {
       try { localStorage.setItem(LS_KEY, JSON.stringify(this.data)); } catch (e) {}
 
       // 성공 여부와 상관없이 화면은 즉시 갱신 (낙관적 업데이트)
-      // — 이게 안 되어 있으면 Firebase 쓰기가 실패했을 때 삭제/추가/수정이
-      //   로컬 데이터엔 반영돼도 화면엔 전혀 반영되지 않는 문제가 생김
       this.emit();
 
-      if (this.mode === 'firebase' && this.fbRef) {
+      if (this.mode !== 'firebase' || !this.fbRef) return;
+
+      // 저장 요청이 겹치지 않도록 순서대로 처리 (동시에 여러 번 저장하면
+      // 앞선 쓰기의 응답이 나중에 도착해 최신 상태를 덮어쓰는 문제가 생길 수 있음)
+      this._writeQueue = (this._writeQueue || Promise.resolve()).then(async () => {
         try {
           await this.fbRef.set(this.data);
           const banner = $('#saveFailBanner');
@@ -1653,7 +1655,8 @@ window.TRIP_INFO = {
           const banner = $('#saveFailBanner');
           if (banner) banner.classList.remove('hidden');
         }
-      }
+      });
+      return this._writeQueue;
     },
 
     setMe(name, slot) {
