@@ -1600,6 +1600,11 @@ window.TRIP_INFO = {
       // 항상 로컬에도 백업 저장 (Firebase 실패해도 기기 안에서는 유지되도록)
       try { localStorage.setItem(LS_KEY, JSON.stringify(this.data)); } catch (e) {}
 
+      // 성공 여부와 상관없이 화면은 즉시 갱신 (낙관적 업데이트)
+      // — 이게 안 되어 있으면 Firebase 쓰기가 실패했을 때 삭제/추가/수정이
+      //   로컬 데이터엔 반영돼도 화면엔 전혀 반영되지 않는 문제가 생김
+      this.emit();
+
       if (this.mode === 'firebase' && this.fbRef) {
         try {
           await this.fbRef.set(this.data);
@@ -1607,8 +1612,6 @@ window.TRIP_INFO = {
           console.error('[Firebase 저장 실패]', e);
           toast('⚠️ 실시간 저장 실패 — Firebase 규칙/네트워크를 확인해주세요 (로컬엔 저장됨)');
         }
-      } else {
-        this.emit();
       }
     },
 
@@ -2444,8 +2447,7 @@ window.TRIP_INFO = {
       const item = (store.data[section] || []).find(i => i.id === id);
       if (!item) return;
       if (section === 'schedule') openScheduleModal(item);
-      else if (section === 'wishlist') openWishlistModal(item);
-      else if (section === 'foods') openFoodsModal(item);
+      else if (section === 'wishes') openWishesModal(item);
       else if (section === 'checklist') openChecklistModal(item);
       else if (section === 'budget') openBudgetModal(item);
     } else if (type === 'delete') {
