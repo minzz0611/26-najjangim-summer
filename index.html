@@ -886,13 +886,13 @@ a {
 /* Nickname picker */
 .nickname-suggests {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
   margin-bottom: 12px;
 }
 .nick-chip {
-  padding: 10px 18px;
+  padding: 12px 24px;
   border-radius: var(--r-full);
   background: white;
   border: 1.5px solid var(--hairline);
@@ -900,6 +900,9 @@ a {
   font-weight: 700;
   color: var(--ink);
   transition: all 0.15s;
+  min-width: 160px;
+  text-align: center;
+  white-space: nowrap;
 }
 .nick-chip:active, .nick-chip.selected {
   background: var(--sky);
@@ -1575,22 +1578,35 @@ window.TRIP_INFO = {
   const fallbackTextColors = ['#6D28D9', '#047857', '#BE185D', '#B45309', '#0369A1'];
   // 멤버별 강조 글자 — 순서대로 읽으면 "나짱임"
   const ALIAS_HINT = { '희주': '나', '나원': '짱', '민주': '임' };
+  // 별명이 바뀌어도(roster) 그 사람 고유의 색/강조글자는 원래 자리(slot) 기준으로 유지
+  function resolveSlot(name) {
+    const roster = (store.data && store.data.roster) || {};
+    for (const slot in roster) {
+      if (roster[slot] === name) return slot;
+    }
+    return name;
+  }
   function colorFor(name) {
-    if (MEMBER_COLORS[name]) return MEMBER_COLORS[name];
+    const slot = resolveSlot(name);
+    if (MEMBER_COLORS[slot]) return MEMBER_COLORS[slot];
     let h = 0;
-    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+    for (let i = 0; i < slot.length; i++) h = (h * 31 + slot.charCodeAt(i)) >>> 0;
     return fallbackColors[h % fallbackColors.length];
   }
   // 글자 색으로 쓸 때(배경 아님) — 더 진한 톤
   function colorForText(name) {
-    if (MEMBER_TEXT_COLORS[name]) return MEMBER_TEXT_COLORS[name];
+    const slot = resolveSlot(name);
+    if (MEMBER_TEXT_COLORS[slot]) return MEMBER_TEXT_COLORS[slot];
     let h = 0;
-    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+    for (let i = 0; i < slot.length; i++) h = (h * 31 + slot.charCodeAt(i)) >>> 0;
     return fallbackTextColors[h % fallbackTextColors.length];
   }
   function initial(name) { return (name || '?').trim().charAt(0); }
-  // 아바타 글자 — 희주/나원/민주는 항상 강조 글자(나/짱/임)를 우선 사용
-  function avatarLetter(slotOrName) { return ALIAS_HINT[slotOrName] || initial(slotOrName); }
+  // 아바타 글자 — 희주/나원/민주는 항상 강조 글자(나/짱/임)를 우선 사용 (별명으로 바꿔도 유지)
+  function avatarLetter(slotOrName) {
+    const slot = resolveSlot(slotOrName);
+    return ALIAS_HINT[slot] || initial(slotOrName);
+  }
 
   function fmtDate(d) {
     const dt = new Date(d);
@@ -2500,10 +2516,6 @@ window.TRIP_INFO = {
           <div class="lbl">데이터 내보내기</div>
           <div class="val">JSON ›</div>
         </button>
-        <button class="settings-row tap" data-action="logout" style="width:100%;text-align:left;background:none;border:none">
-          <div class="lbl" style="color:var(--critical)">닉네임 재등록</div>
-          <div class="val">›</div>
-        </button>
       </div>
 
       <div style="text-align:center;font-size:11px;color:var(--stone);margin-top:24px;line-height:1.6">
@@ -2709,11 +2721,6 @@ window.TRIP_INFO = {
   function handleSettingsAction(action) {
     if (action === 'change-nick') {
       showOnboarding(true);
-    } else if (action === 'logout') {
-      if (!confirm('닉네임을 다시 등록하시겠어요?')) return;
-      localStorage.removeItem(LS_ME);
-      store.me = null;
-      renderRoute();
     } else if (action === 'export') {
       const blob = new Blob([JSON.stringify(store.data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
