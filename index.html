@@ -1528,7 +1528,8 @@ window.TRIP_INFO = {
     checklist: demoChecklist(),  // {id, title, checked, by, at, checkedBy, checkedAt}
     budget: demoBudget(),     // {id, title, amount, category, by, at}
     memos: demoMemos(),      // 자유 게시판 글: {id, name, body, at}
-    activity: []    // 이력 로그
+    activity: [],    // 이력 로그
+    roster: {}       // 자리(slot) -> 현재 닉네임. 예: { "나원": "제이" }
   });
 
   const store = {
@@ -1569,6 +1570,7 @@ window.TRIP_INFO = {
               ['schedule', 'wishes', 'checklist', 'budget', 'memos', 'activity'].forEach(k => {
                 if (!Array.isArray(this.data[k])) this.data[k] = [];
               });
+              if (!this.data.roster || typeof this.data.roster !== 'object') this.data.roster = {};
             } else {
               this.data = emptyData();
             }
@@ -1615,9 +1617,16 @@ window.TRIP_INFO = {
       }
     },
 
-    setMe(name) {
-      this.me = { name, joinedAt: now() };
+    setMe(name, slot) {
+      // slot: 이 사람이 원래 선택했던 프리셋 자리(민주/희주/나원 등). 닉네임을 바꿔도 자리는 유지.
+      const finalSlot = slot || (this.me && this.me.slot) || (TRIP.members.includes(name) ? name : name);
+      this.me = { name, slot: finalSlot, joinedAt: (this.me && this.me.joinedAt) || now() };
       try { localStorage.setItem(LS_ME, JSON.stringify(this.me)); } catch (e) {}
+
+      // 홈 화면 멤버 목록에도 바뀐 닉네임이 보이도록 roster 동기화 (다른 기기에도 공유됨)
+      if (!this.data.roster) this.data.roster = {};
+      this.data.roster[finalSlot] = name;
+      this.save();
     },
 
     // 활동 로그 추가 (최근 100개)
@@ -1747,13 +1756,17 @@ window.TRIP_INFO = {
       `${start.getFullYear()}. ${start.getMonth() + 1}. ${start.getDate()} ~ ${end.getMonth() + 1}. ${end.getDate()} · ${weekday(TRIP.startDate).slice(0, 1)}·${weekday(TRIP.endDate).slice(0, 1)}`;
 
     // members
+    const roster = store.data.roster || {};
     const mr = $('#membersRow');
-    mr.innerHTML = TRIP.members.map(n => `
-      <div class="member-chip">
-        <div class="member-avatar" style="background:${colorFor(n)}">${escapeHtml(initial(n))}</div>
-        <span>${escapeHtml(n)}</span>
-      </div>
-    `).join('');
+    mr.innerHTML = TRIP.members.map(n => {
+      const displayName = roster[n] || n;
+      return `
+        <div class="member-chip">
+          <div class="member-avatar" style="background:${colorFor(n)}">${escapeHtml(initial(displayName))}</div>
+          <span>${escapeHtml(displayName)}</span>
+        </div>
+      `;
+    }).join('');
 
     // header me
     const me = store.me.name;
