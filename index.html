@@ -69,6 +69,7 @@
   /* Layout */
   --app-max: 480px;
   --tabbar-h: 72px;
+  --subtabs-h: 64px;
   --header-h: 64px;
 }
 
@@ -122,7 +123,7 @@ a {
   box-shadow: 0 0 40px rgba(15, 23, 42, 0.06);
 }
 .app.has-subtabs {
-  padding-bottom: calc(var(--tabbar-h) + 20px + 62px);
+  padding-bottom: calc(var(--tabbar-h) + var(--subtabs-h) + 20px);
 }
 
 /* ================================
@@ -435,12 +436,16 @@ a {
 .sub-tabs {
   position: fixed;
   left: 50%;
-  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+  bottom: var(--tabbar-h);
   transform: translateX(-50%);
   width: 100%;
   max-width: var(--app-max);
+  height: var(--subtabs-h);
+  box-sizing: border-box;
   z-index: 39;
   padding: 10px 16px;
+  display: flex;
+  align-items: center;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -450,6 +455,7 @@ a {
 .sub-tabs-track {
   position: relative;
   display: flex;
+  width: 100%;
   background: var(--surface-soft);
   border-radius: var(--r-full);
   padding: 4px;
@@ -1124,6 +1130,29 @@ a {
 .sync-pill.local .sync-dot { background: var(--warning); }
 
 /* ================================
+   Save Fail Banner
+   ================================ */
+.save-fail-banner {
+  position: sticky;
+  top: 0;
+  z-index: 45;
+  background: #FEF2F2;
+  color: #B91C1C;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  padding: 8px 14px;
+  border-bottom: 1px solid #FCA5A5;
+  line-height: 1.5;
+}
+.save-fail-banner a {
+  color: #B91C1C;
+  text-decoration: underline;
+  margin-left: 4px;
+}
+.save-fail-banner.hidden { display: none; }
+
+/* ================================
    Toast
    ================================ */
 .toast {
@@ -1274,6 +1303,12 @@ window.TRIP_INFO = {
       <div id="headerTitle" class="header-title">경주 여행</div>
       <div id="headerMe" class="header-me"></div>
     </header>
+
+    <!-- 저장 실패 배너 (토스트와 달리 사라지지 않고 계속 보임) -->
+    <div id="saveFailBanner" class="save-fail-banner hidden">
+      ⚠️ 저장이 서버에 반영되지 않고 있어요 — Firebase 규칙(Rules) 문제로 보여요.
+      <a href="https://console.firebase.google.com/project/najjangim-summer/database/najjangim-summer-default-rtdb/rules" target="_blank" rel="noopener">규칙 확인하러 가기 →</a>
+    </div>
 
     <!-- ===================== 홈 ===================== -->
     <section id="screen-home" class="screen active">
@@ -1610,9 +1645,13 @@ window.TRIP_INFO = {
       if (this.mode === 'firebase' && this.fbRef) {
         try {
           await this.fbRef.set(this.data);
+          const banner = $('#saveFailBanner');
+          if (banner) banner.classList.add('hidden');
         } catch (e) {
           console.error('[Firebase 저장 실패]', e);
           toast('⚠️ 실시간 저장 실패 — Firebase 규칙/네트워크를 확인해주세요 (로컬엔 저장됨)');
+          const banner = $('#saveFailBanner');
+          if (banner) banner.classList.remove('hidden');
         }
       }
     },
@@ -2617,6 +2656,12 @@ window.TRIP_INFO = {
     wipeCleanupDone = true;
     if (store.data.wipedVersion === WIPE_VERSION) return;
 
+    // Firebase 쓰기가 실패해도(권한 문제 등) 같은 기기에서는 반복 초기화되지 않도록
+    // 로컬에도 별도로 완료 여부를 기록
+    let localAlreadyWiped = false;
+    try { localAlreadyWiped = localStorage.getItem(`trip_wiped_${ROOM}`) === WIPE_VERSION; } catch (e) {}
+    if (localAlreadyWiped) return;
+
     store.data.schedule = [];
     store.data.wishes = [];
     store.data.checklist = [];
@@ -2625,6 +2670,7 @@ window.TRIP_INFO = {
     store.data.activity = [];
     store.data.wipedVersion = WIPE_VERSION;
     store.save();
+    try { localStorage.setItem(`trip_wiped_${ROOM}`, WIPE_VERSION); } catch (e) {}
   }
 
   // 데이터가 실제로 로드된 시점(Firebase 응답 또는 로컬 로드 완료 후)에 실행되도록 onChange에 연결
