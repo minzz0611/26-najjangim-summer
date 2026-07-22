@@ -1523,11 +1523,11 @@ window.TRIP_INFO = {
   ]);
 
   const emptyData = () => ({
-    schedule: demoSchedule(),   // {id, day, time, title, desc, by, at, editedBy, editedAt}
-    wishes: demoWishes(),   // {id, type: 'place'|'food', title, desc, mapUrl, by, at, ...}
-    checklist: demoChecklist(),  // {id, title, checked, by, at, checkedBy, checkedAt}
-    budget: demoBudget(),     // {id, title, amount, category, by, at}
-    memos: demoMemos(),      // 자유 게시판 글: {id, name, body, at}
+    schedule: [],   // {id, day, time, title, desc, by, at, editedBy, editedAt}
+    wishes: [],   // {id, type: 'place'|'food', title, desc, mapUrl, by, at, ...}
+    checklist: [],  // {id, title, checked, by, at, checkedBy, checkedAt}
+    budget: [],     // {id, title, amount, category, by, at}
+    memos: [],      // 자유 게시판 글: {id, name, body, at}
     activity: [],    // 이력 로그
     roster: {}       // 자리(slot) -> 현재 닉네임. 예: { "나원": "제이" }
   });
@@ -2605,7 +2605,31 @@ window.TRIP_INFO = {
 
   window.addEventListener('hashchange', renderRoute);
 
+  // 사람들이 처음부터 쓸 수 있도록, 앱이 열릴 때 딱 한 번 모든 데이터를 초기화
+  // (일정 · 하고싶은것 · 준비물 · 예산 · 게시판 · 수정이력 전부. 닉네임 자리 정보는 유지)
+  // 초기화 완료 여부는 공유 데이터 자체에 기록 — 다른 사람이 다른 기기에서 처음 열어도
+  // 이미 초기화됐다면(그리고 그 뒤에 새로 작성한 내용이 있다면) 다시 지우지 않도록 함
+  const WIPE_VERSION = 'wipe-2026-07-22-01';
+  let wipeCleanupDone = false;
+
+  function wipeAllDataOnce() {
+    if (wipeCleanupDone) return;
+    wipeCleanupDone = true;
+    if (store.data.wipedVersion === WIPE_VERSION) return;
+
+    store.data.schedule = [];
+    store.data.wishes = [];
+    store.data.checklist = [];
+    store.data.budget = [];
+    store.data.memos = [];
+    store.data.activity = [];
+    store.data.wipedVersion = WIPE_VERSION;
+    store.save();
+  }
+
+  // 데이터가 실제로 로드된 시점(Firebase 응답 또는 로컬 로드 완료 후)에 실행되도록 onChange에 연결
   store.onChange(() => {
+    wipeAllDataOnce();
     // 데이터 변경 시 현재 화면 다시 그리기
     renderRoute();
   });
